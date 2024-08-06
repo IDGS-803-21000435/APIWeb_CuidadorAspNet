@@ -1,0 +1,657 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Cuidador, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/ContratoItem/fechasAOcupar": {
+      "get": {
+        "tags": [
+          "ContratoItem"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ContratoItem/listarContrato": {
+      "get": {
+        "tags": [
+          "ContratoItem"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ContratoItem/guardarContrato": {
+      "post": {
+        "tags": [
+          "ContratoItem"
+        ],
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/RegisterContractDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Usuario/login": {
+      "post": {
+        "tags": [
+          "Usuario"
+        ],
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/UsuarioLoginDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Usuario/loginCuidador": {
+      "post": {
+        "tags": [
+          "Usuario"
+        ],
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/UsuarioLoginDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Usuario/loginCliente": {
+      "post": {
+        "tags": [
+          "Usuario"
+        ],
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/UsuarioLoginDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Usuario/verUsuario/{idUser}": {
+      "get": {
+        "tags": [
+          "Usuario"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idUser",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Usuario/listarDatosUsuario/{idUser}": {
+      "get": {
+        "tags": [
+          "Usuario"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idUser",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Usuario/registrarUsuario": {
+      "post": {
+        "tags": [
+          "Usuario"
+        ],
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/RegistrarUsuarioDTO"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "CertificacionDTO": {
+      "type": "object",
+      "properties": {
+        "idCertificacion": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "tipoCertificacion": {
+          "type": "string"
+        },
+        "institucionEmisora": {
+          "type": "string"
+        },
+        "fechaCertificacion": {
+          "format": "date",
+          "type": "string"
+        },
+        "vigente": {
+          "type": "boolean"
+        },
+        "descripcion": {
+          "type": "string"
+        },
+        "fechaRegistro": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "usuarioRegistro": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "fechaModificacion": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "usuarioModifico": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "personaId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "documentoId": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CertificacionExperienciaDTO": {
+      "type": "object",
+      "properties": {
+        "certificacion": {
+          "$ref": "#/definitions/CertificacionDTO"
+        },
+        "documento": {
+          "$ref": "#/definitions/DocumentacionDTO"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ContratoItemDTO": {
+      "type": "object",
+      "properties": {
+        "observaciones": {
+          "type": "string"
+        },
+        "horario_inicio_propuesto": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "horario_fin_propuesto": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "tareas_contrato": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TareasContratoDTO"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "DatosMedicosDTO": {
+      "type": "object",
+      "properties": {
+        "antecedentesMedicos": {
+          "type": "string"
+        },
+        "alergias": {
+          "type": "string"
+        },
+        "tipoSanguineo": {
+          "type": "string"
+        },
+        "nombreMedicoFamiliar": {
+          "type": "string"
+        },
+        "telefonoMedicoFamiliar": {
+          "type": "string"
+        },
+        "observaciones": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DocumentacionDTO": {
+      "type": "object",
+      "properties": {
+        "personaId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "tipoDocumento": {
+          "type": "string"
+        },
+        "nombreDocumento": {
+          "type": "string"
+        },
+        "urlDocumento": {
+          "type": "string"
+        },
+        "fechaEmision": {
+          "format": "date",
+          "type": "string"
+        },
+        "fechaExpiracion": {
+          "format": "date",
+          "type": "string"
+        },
+        "version": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "estatusId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "fechaRegistro": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "usuarioRegistro": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "fechaModificacion": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "usuarioModifico": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "DomicilioDTO": {
+      "type": "object",
+      "properties": {
+        "calle": {
+          "type": "string"
+        },
+        "colonia": {
+          "type": "string"
+        },
+        "numeroInterior": {
+          "type": "string"
+        },
+        "numeroExterior": {
+          "type": "string"
+        },
+        "ciudad": {
+          "type": "string"
+        },
+        "estado": {
+          "type": "string"
+        },
+        "pais": {
+          "type": "string"
+        },
+        "referencias": {
+          "type": "string"
+        },
+        "estatusId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "fechaRegistro": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "usuarioRegistro": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "fechaModificacion": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "usuarioModifico": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PadecimientoDTO": {
+      "type": "object",
+      "properties": {
+        "datosMedicosId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "nombre": {
+          "type": "string"
+        },
+        "descripcion": {
+          "type": "string"
+        },
+        "padeceDesde": {
+          "format": "date",
+          "type": "string"
+        },
+        "fechaRegistro": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "usuarioRegistro": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "fechaModificacion": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "usuarioModifico": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PersonaDTO": {
+      "type": "object",
+      "properties": {
+        "nombre": {
+          "type": "string"
+        },
+        "apellidoPaterno": {
+          "type": "string"
+        },
+        "apellidoMaterno": {
+          "type": "string"
+        },
+        "correoElectronico": {
+          "type": "string"
+        },
+        "fechaNacimiento": {
+          "format": "date",
+          "type": "string"
+        },
+        "genero": {
+          "type": "string"
+        },
+        "estadoCivil": {
+          "type": "string"
+        },
+        "rfc": {
+          "type": "string"
+        },
+        "curp": {
+          "type": "string"
+        },
+        "telefonoParticular": {
+          "type": "string"
+        },
+        "telefonoMovil": {
+          "type": "string"
+        },
+        "telefonoEmergencia": {
+          "type": "string"
+        },
+        "nombreCompletoFamiliar": {
+          "type": "string"
+        },
+        "domicilioId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "datosMedicosId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "avatarImage": {
+          "type": "string"
+        },
+        "estatusId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "fechaRegistro": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "usuarioRegistro": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "fechaModificacion": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "usuarioModifico": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RegisterContractDTO": {
+      "type": "object",
+      "properties": {
+        "persona_cuidador_id": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "persona_cliente_id": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "contrato_item": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ContratoItemDTO"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "RegistrarUsuarioDTO": {
+      "type": "object",
+      "properties": {
+        "domicilio": {
+          "$ref": "#/definitions/DomicilioDTO"
+        },
+        "datosMedicos": {
+          "$ref": "#/definitions/DatosMedicosDTO"
+        },
+        "padecimientos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PadecimientoDTO"
+          }
+        },
+        "usuario": {
+          "$ref": "#/definitions/UsuarioDTO"
+        },
+        "persona": {
+          "$ref": "#/definitions/PersonaDTO"
+        },
+        "documentacion": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DocumentacionDTO"
+          }
+        },
+        "certificacionesExperiencia": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CertificacionExperienciaDTO"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "TareasContratoDTO": {
+      "type": "object",
+      "properties": {
+        "tituloTarea": {
+          "type": "string"
+        },
+        "descripcionTarea": {
+          "type": "string"
+        },
+        "tipoTarea": {
+          "type": "string"
+        },
+        "estatusId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "fechaARealizar": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "fechaInicio": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "fechaFinalizacion": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "fechaPospuesta": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "UsuarioDTO": {
+      "type": "object",
+      "properties": {
+        "usuarioNivelId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "tipoUsuarioId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "estatusId": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "usuario": {
+          "type": "string"
+        },
+        "contrasenia": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "UsuarioLoginDTO": {
+      "type": "object",
+      "properties": {
+        "usuario": {
+          "type": "string"
+        },
+        "contrasenia": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,6 @@
+@Cuidador_HostAddress = http://localhost:5003
+
+GET {{Cuidador_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
