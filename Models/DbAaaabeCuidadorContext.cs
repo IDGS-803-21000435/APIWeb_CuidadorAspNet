@@ -81,7 +81,7 @@ public partial class DbAaaabeCuidadorContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=sql8006.site4now.net;Database=db_aaaabe_cuidador;User Id=db_aaaabe_cuidador_admin;Password=Dellsvcs1!.; TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=sql8006.site4now.net;Database=db_aaaabe_cuidador;User Id=db_aaaabe_cuidador_admin;Password=Dellsvcs1!.;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -1034,10 +1034,11 @@ public partial class DbAaaabeCuidadorContext : DbContext
 
         modelBuilder.Entity<TareasContrato>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("tareas_contrato");
+            entity.HasKey(e => e.IdTareas).HasName("fk_id_tareas_contrato");
 
+            entity.ToTable("tareas_contrato");
+
+            entity.Property(e => e.IdTareas).HasColumnName("id_tareas");
             entity.Property(e => e.ContratoitemId).HasColumnName("contratoitem_id");
             entity.Property(e => e.DescripcionTarea)
                 .HasMaxLength(200)
@@ -1056,9 +1057,6 @@ public partial class DbAaaabeCuidadorContext : DbContext
             entity.Property(e => e.FechaPospuesta)
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_pospuesta");
-            entity.Property(e => e.IdTareas)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("id_tareas");
             entity.Property(e => e.TipoTarea)
                 .HasMaxLength(60)
                 .IsUnicode(false)
@@ -1068,12 +1066,12 @@ public partial class DbAaaabeCuidadorContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("titulo_tarea");
 
-            entity.HasOne(d => d.Contratoitem).WithMany()
+            entity.HasOne(d => d.Contratoitem).WithMany(p => p.TareasContratos)
                 .HasForeignKey(d => d.ContratoitemId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__tareas_co__contr__395884C4");
 
-            entity.HasOne(d => d.Estatus).WithMany()
+            entity.HasOne(d => d.Estatus).WithMany(p => p.TareasContratos)
                 .HasForeignKey(d => d.EstatusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__tareas_co__estat__367C1819");

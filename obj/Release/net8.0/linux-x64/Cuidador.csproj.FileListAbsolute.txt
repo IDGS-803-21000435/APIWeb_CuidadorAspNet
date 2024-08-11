@@ -123,3 +123,4 @@ C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\obj\R
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\obj\Release\net8.0\linux-x64\Cuidador.pdb
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\obj\Release\net8.0\linux-x64\Cuidador.genruntimeconfig.cache
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\obj\Release\net8.0\linux-x64\ref\Cuidador.dll
+C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\obj\Release\net8.0\linux-x64\Cuidador.sourcelink.json

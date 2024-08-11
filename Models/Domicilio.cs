@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -35,7 +34,7 @@ public partial class Domicilio
     public int? UsuarioModifico { get; set; }
 
     public virtual Estatus? Estatus { get; set; }
-    [JsonIgnore]
+
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
 
     public virtual ICollection<PersonaMoral> PersonaMorals { get; set; } = new List<PersonaMoral>();

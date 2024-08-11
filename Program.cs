@@ -10,7 +10,7 @@ var remota = "cadenaSQLRemota";
 var connectionString = builder.Configuration.GetConnectionString(remota);
 
 // AGERGAMOS LA CONFIGURACION SQL
-builder.Services.AddDbContext<SysCuidadorV2Context>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<DbAaaabeCuidadorContext>(options => options.UseSqlServer(connectionString));
 
 // DEFINIMOS LA NUEVA POLITICA DE LOS CORS
 builder.Services.AddCors(options =>

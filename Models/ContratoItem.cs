@@ -26,4 +26,6 @@ public partial class ContratoItem
     public virtual Contrato Contrato { get; set; } = null!;
 
     public virtual Estatus Estatus { get; set; } = null!;
+
+    public virtual ICollection<TareasContrato> TareasContratos { get; set; } = new List<TareasContrato>();
 }

@@ -585,6 +585,10 @@
     "TareasContratoDTO": {
       "type": "object",
       "properties": {
+        "idTarea": {
+          "format": "int32",
+          "type": "integer"
+        },
         "tituloTarea": {
           "type": "string"
         },
@@ -599,18 +603,6 @@
           "type": "integer"
         },
         "fechaARealizar": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "fechaInicio": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "fechaFinalizacion": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "fechaPospuesta": {
           "format": "date-time",
           "type": "string"
         }

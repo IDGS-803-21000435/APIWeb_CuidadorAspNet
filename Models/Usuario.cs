@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -33,7 +32,7 @@ public partial class Usuario
     public virtual Estatus Estatus { get; set; } = null!;
 
     public virtual ICollection<MetodoPagoUsuario> MetodoPagoUsuarios { get; set; } = new List<MetodoPagoUsuario>();
-    [JsonIgnore]
+
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
 
     public virtual ICollection<SalarioCuidador> SalarioCuidadors { get; set; } = new List<SalarioCuidador>();

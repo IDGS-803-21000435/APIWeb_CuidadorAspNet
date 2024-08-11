@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -27,8 +26,8 @@ public partial class DatosMedico
     public DateTime? FechaModificacion { get; set; }
 
     public int? UsuarioModifico { get; set; }
-    [JsonIgnore]
+
     public virtual ICollection<Padecimiento> Padecimientos { get; set; } = new List<Padecimiento>();
-    [JsonIgnore]
+
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
 }

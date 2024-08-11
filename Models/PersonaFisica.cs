@@ -53,20 +53,21 @@ public partial class PersonaFisica
     public int? EstatusId { get; set; }
 
     public short? EsFamiliar { get; set; }
+
     public virtual ICollection<CertificacionesExperiencium> CertificacionesExperiencia { get; set; } = new List<CertificacionesExperiencium>();
 
     public virtual ICollection<ComentariosUsuario> ComentariosUsuarioPersonaEmisors { get; set; } = new List<ComentariosUsuario>();
 
     public virtual ICollection<ComentariosUsuario> ComentariosUsuarioPersonaReceptors { get; set; } = new List<ComentariosUsuario>();
-
+    [JsonIgnore]
     public virtual ICollection<Contrato> ContratoPersonaidClienteNavigations { get; set; } = new List<Contrato>();
-
+    [JsonIgnore]
     public virtual ICollection<Contrato> ContratoPersonaidCuidadorNavigations { get; set; } = new List<Contrato>();
 
     public virtual DatosMedico? DatosMedicos { get; set; }
 
     public virtual ICollection<Documentacion> Documentacions { get; set; } = new List<Documentacion>();
-   
+
     public virtual Domicilio Domicilio { get; set; } = null!;
 
     public virtual Estatus? Estatus { get; set; }

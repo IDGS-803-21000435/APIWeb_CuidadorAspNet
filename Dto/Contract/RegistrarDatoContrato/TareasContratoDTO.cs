@@ -2,6 +2,7 @@
 {
     public class TareasContratoDTO
     {
+        public int? idTarea {  get; set; }  
         public string? TituloTarea { get; set; }
 
         public string? DescripcionTarea { get; set; }
@@ -11,11 +12,5 @@
         public int EstatusId { get; set; }
 
         public DateTime? FechaARealizar { get; set; }
-
-        public DateTime? FechaInicio { get; set; }
-
-        public DateTime? FechaFinalizacion { get; set; }
-
-        public DateTime? FechaPospuesta { get; set; }
     }
 }

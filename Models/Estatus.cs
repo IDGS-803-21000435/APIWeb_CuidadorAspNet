@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -28,7 +29,7 @@ public partial class Estatus
     public virtual ICollection<Capacitacion> Capacitacions { get; set; } = new List<Capacitacion>();
 
     public virtual ICollection<ContratoItem> ContratoItems { get; set; } = new List<ContratoItem>();
-
+    [JsonIgnore]
     public virtual ICollection<Contrato> Contratos { get; set; } = new List<Contrato>();
 
     public virtual ICollection<Documentacion> Documentacions { get; set; } = new List<Documentacion>();
@@ -40,6 +41,8 @@ public partial class Estatus
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
 
     public virtual ICollection<Saldo> Saldos { get; set; } = new List<Saldo>();
+
+    public virtual ICollection<TareasContrato> TareasContratos { get; set; } = new List<TareasContrato>();
 
     public virtual TipoEstatus Tipoestatus { get; set; } = null!;
 

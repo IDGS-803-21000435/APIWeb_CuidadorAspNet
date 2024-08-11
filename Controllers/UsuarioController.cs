@@ -15,9 +15,9 @@ namespace Cuidador.Controllers
     public class UsuarioController : ControllerBase
     {
         // VARIABLE DE COTEXTO DE BD
-        private readonly SysCuidadorV2Context _baseDatos;
+        private readonly DbAaaabeCuidadorContext _baseDatos;
 
-        public UsuarioController(SysCuidadorV2Context baseDatos)
+        public UsuarioController(DbAaaabeCuidadorContext baseDatos)
         {
             this._baseDatos = baseDatos;
         }
@@ -278,6 +278,13 @@ namespace Cuidador.Controllers
             return Ok(outModel);            
         }
 
+       /* [HttpGet]
+        [Route("usCuidador")]
+        public async Task<IActionResult> dataCuidador()
+        {
+            var us = await _baseDatos.Usuarios.ToListAsync();
+        }
+       */
         [HttpGet]
         [Route("listarDatosUsuario/{idUser}")]
         public async Task<IActionResult> listarDatos(int idUser)

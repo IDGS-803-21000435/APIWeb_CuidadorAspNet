@@ -5,6 +5,18 @@
     {
       "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\controllers\\contratoitemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\contratoitemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\dto\\contract\\listarcontrato\\outlistarcontrato.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:dto\\contract\\listarcontrato\\outlistarcontrato.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\models\\personafisica.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:models\\personafisica.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\controllers\\usuariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\usuariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,8 +26,46 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PersonaFisica.cs",
+              "DocumentMoniker": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Models\\PersonaFisica.cs",
+              "RelativeDocumentMoniker": "Models\\PersonaFisica.cs",
+              "ToolTip": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Models\\PersonaFisica.cs",
+              "RelativeToolTip": "Models\\PersonaFisica.cs",
+              "ViewState": "AQIAADIAAAAAAAAAAAAkwD8AAAAPAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-11T19:13:15.263Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "OUTListarContrato.cs",
+              "DocumentMoniker": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Dto\\Contract\\ListarContrato\\OUTListarContrato.cs",
+              "RelativeDocumentMoniker": "Dto\\Contract\\ListarContrato\\OUTListarContrato.cs",
+              "ToolTip": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Dto\\Contract\\ListarContrato\\OUTListarContrato.cs",
+              "RelativeToolTip": "Dto\\Contract\\ListarContrato\\OUTListarContrato.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAAcAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-11T19:03:26.555Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "UsuarioController.cs",
+              "DocumentMoniker": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Controllers\\UsuarioController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UsuarioController.cs",
+              "ToolTip": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Controllers\\UsuarioController.cs",
+              "RelativeToolTip": "Controllers\\UsuarioController.cs",
+              "ViewState": "AQIAAIkAAAAAAAAAAAAgwF0AAAAnAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-11T02:15:07.176Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -24,7 +74,7 @@
               "RelativeDocumentMoniker": "Controllers\\ContratoItemController.cs",
               "ToolTip": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Controllers\\ContratoItemController.cs",
               "RelativeToolTip": "Controllers\\ContratoItemController.cs",
-              "ViewState": "AQIAAB8AAAAAAAAAAAA+wGQAAAAdAAAA",
+              "ViewState": "AQIAABUAAAAAAAAAAAAowC4AAAAiAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-08-06T16:51:12.632Z",
               "EditorCaption": ""

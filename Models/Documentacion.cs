@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -31,10 +30,10 @@ public partial class Documentacion
     public DateTime? FechaModificacion { get; set; }
 
     public int? UsuarioModifico { get; set; }
-    [JsonIgnore]
+
     public virtual ICollection<CertificacionesExperiencium> CertificacionesExperiencia { get; set; } = new List<CertificacionesExperiencium>();
 
     public virtual Estatus Estatus { get; set; } = null!;
-    [JsonIgnore]
+
     public virtual PersonaFisica Persona { get; set; } = null!;
 }
