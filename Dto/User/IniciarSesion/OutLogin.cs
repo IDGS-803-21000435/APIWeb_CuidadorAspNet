@@ -4,9 +4,6 @@ namespace Cuidador.Dto.User.IniciarSesion
 {
     public class OutLogin
     {
-        public Usuario usuario;
-        public List<PersonaFisica> personas;
-        public List<Menu> menus;
 
         public int IdUsuario { get; set; }
 

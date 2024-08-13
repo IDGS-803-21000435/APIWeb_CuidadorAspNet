@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -24,7 +25,7 @@ public partial class TareasContrato
     public DateTime? FechaFinalizacion { get; set; }
 
     public DateTime? FechaPospuesta { get; set; }
-
+    [JsonIgnore]
     public virtual ContratoItem Contratoitem { get; set; } = null!;
 
     public virtual Estatus Estatus { get; set; } = null!;

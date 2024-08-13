@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -23,6 +24,8 @@ public partial class ContratoItem
 
     public DateTime? FechaFinCuidado { get; set; }
 
+    public decimal? ImporteTotal { get; set; }
+    
     public virtual Contrato Contrato { get; set; } = null!;
 
     public virtual Estatus Estatus { get; set; } = null!;

@@ -17,10 +17,47 @@
         }
       }
     },
-    "/api/ContratoItem/listarContrato": {
+    "/api/ContratoItem/detalleVistaCliente/{idContrato}": {
       "get": {
         "tags": [
           "ContratoItem"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idContrato",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/ContratoItem/listarContrato/{idUsuario}/{tipousuarioid}": {
+      "get": {
+        "tags": [
+          "ContratoItem"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idUsuario",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "path",
+            "name": "tipousuarioid",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
         ],
         "responses": {
           "200": {

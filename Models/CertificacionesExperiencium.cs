@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -32,6 +33,6 @@ public partial class CertificacionesExperiencium
     public int? DocumentoId { get; set; }
 
     public virtual Documentacion? Documento { get; set; }
-
+    [JsonIgnore]
     public virtual PersonaFisica Persona { get; set; } = null!;
 }

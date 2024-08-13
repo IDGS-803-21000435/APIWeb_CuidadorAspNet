@@ -1,4 +1,5 @@
-﻿using Cuidador.Dto.Contract.ListarContrato;
+﻿using Cuidador.Dto.Contract.DetalleVistaCliente;
+using Cuidador.Dto.Contract.ListarContrato;
 using Cuidador.Dto.Contract.RegistrarDatoContrato;
 using Cuidador.Models;
 using Microsoft.AspNetCore.Http;
@@ -28,25 +29,143 @@ namespace Cuidador.Controllers
             return Ok(listaUsuario);
         }
 
-        [HttpGet]
-        [Route("listarContrato")]
-        public async Task<IActionResult> ListarContrato()
+        [HttpGet("detalleVistaCliente/{idContrato}")]
+        public async Task<IActionResult> detalleVistaCliente(int idContrato)
         {
-            var contratos = await _baseDatos.Contratos.ToListAsync();
-            var outListaContrato = new List<OUTListarContrato>();
+            try
+            {
+                var contrato = await _baseDatos.Contratos.SingleOrDefaultAsync(c => c.IdContrato.Equals(idContrato));
+                if (contrato == null)
+                {
+                    return NotFound("Contrato no encontrado.");
+                }
+
+                var list_persona_cuidador = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == contrato.PersonaidCuidador).ToListAsync();
+
+                var outListCuidador = new List<PersonaFisica>();
+
+                foreach (var persona_cuidador in list_persona_cuidador)
+                {
+                    var domicilio = await _baseDatos.Domicilios.SingleOrDefaultAsync(d => d.IdDomicilio == persona_cuidador.DomicilioId);
+                    var certificacionesExp = await _baseDatos.CertificacionesExperiencia.Where(cp => cp.PersonaId == persona_cuidador.IdPersona).ToListAsync();
+                    var comentariosUs = await _baseDatos.ComentariosUsuarios.Where(cm => cm.PersonaReceptorid == persona_cuidador.IdPersona).ToListAsync();
+
+                    var outPersona = new PersonaFisica
+                    {
+                        IdPersona = persona_cuidador.IdPersona,
+                        Nombre = persona_cuidador.Nombre,
+                        ApellidoPaterno = persona_cuidador.ApellidoPaterno,
+                        ApellidoMaterno = persona_cuidador.ApellidoMaterno,
+                        CorreoElectronico = persona_cuidador.CorreoElectronico,
+                        FechaNacimiento = persona_cuidador.FechaNacimiento,
+                        Genero = persona_cuidador.Genero,
+                        EstadoCivil = persona_cuidador.EstadoCivil,
+                        Domicilio = domicilio,
+                        AvatarImage = persona_cuidador.AvatarImage,
+                        CertificacionesExperiencia = certificacionesExp,
+                        ComentariosUsuarioPersonaReceptors = comentariosUs
+                    };
+
+                    outListCuidador.Add(outPersona);
+                }
+
+                var lista_contratositem = await _baseDatos.ContratoItems.Where(c => c.ContratoId == contrato.IdContrato).ToListAsync();
+
+                var outContratoitm = new List<ContratoItem>();
+                foreach (var contratoitm in lista_contratositem)
+                {
+                    var tareas = await _baseDatos.TareasContratos.Where(t => t.ContratoitemId == contratoitm.ContratoId).ToListAsync();
+                    var estatus = await _baseDatos.Estatuses.SingleOrDefaultAsync(e => e.IdEstatus == contratoitm.EstatusId);
+                    var conitm = new ContratoItem
+                    {
+                        IdContratoitem = contratoitm.IdContratoitem,
+                        Estatus = estatus,
+                        Observaciones = contratoitm.Observaciones,
+                        HorarioInicioPropuesto = contratoitm.HorarioInicioPropuesto,
+                        HorarioFinPropuesto = contratoitm.HorarioFinPropuesto,
+                        FechaAceptacion = contratoitm.FechaAceptacion,
+                        FechaInicioCuidado = contratoitm.FechaInicioCuidado,
+                        FechaFinCuidado = contratoitm.FechaFinCuidado,
+                        ImporteTotal = contratoitm.ImporteTotal,
+                        TareasContratos = tareas != null ? tareas : null
+                    };
+
+                    outContratoitm.Add(conitm);
+                }
+
+                var cont = new OUTContratoDetalle
+                {
+                    id_contrato = contrato.IdContrato,
+                    persona_cuidador = outListCuidador,
+                    contrato_item = outContratoitm
+                };
+
+                return Ok(cont);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (ex) here using your logging framework of choice
+                return StatusCode(500, $"Ocurrió un error al procesar la solicitud: {ex.Message}");
+            }
+
+        }
+
+
+        [HttpGet]
+        [Route("listarContrato/{idUsuario}/{tipousuarioid}")]
+        public async Task<IActionResult> ListarContrato(int idUsuario, int tipousuarioid)
+        {
+
+            var personaUsuario = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == idUsuario).ToListAsync();
+            var contratos = new List<Contrato>();
             
+            if (tipousuarioid == 1) // cuidador
+            {
+                foreach (var listpersona in personaUsuario)
+                {
+                    var contrato = await _baseDatos.Contratos.Where(c => c.PersonaidCuidador == listpersona.IdPersona).ToListAsync();
+                    contratos.AddRange(contrato);
+                }
+            }
+            else
+            {
+                foreach (var listpersona in personaUsuario)
+                {
+                    var contrato = await _baseDatos.Contratos.Where(c => c.PersonaidCliente == listpersona.IdPersona).ToListAsync();
+                    contratos.AddRange(contrato);
+                }
+            }
+            
+            var outListaContrato = new List<OUTListarContrato>();
+
+            var count = 0;
+            var countTarea = 0;
             foreach (var listasContrato in contratos)
             {
+                
+
                 var persona_cuidador = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.IdPersona == listasContrato.PersonaidCuidador);
                 var persona_cliente = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.IdPersona == listasContrato.PersonaidCliente);
                 var estatus = await _baseDatos.Estatuses.SingleOrDefaultAsync(e => e.IdEstatus == listasContrato.EstatusId);
+
+                var contratoitem = await _baseDatos.ContratoItems.Where(c => c.ContratoId == listasContrato.IdContrato).ToListAsync();
+                
+                foreach (var itm in contratoitem)
+                {
+                    var tarea = await _baseDatos.TareasContratos.Where(t => t.ContratoitemId == itm.ContratoId).ToListAsync();
+                    countTarea= tarea.Count;
+                }
 
                 var outObject = new OUTListarContrato
                 {
                     id_contrato = listasContrato.IdContrato,
                     persona_cliente = persona_cliente,
                     persona_cuidador = persona_cuidador,
-                    estatus = estatus
+                    estatus = estatus,
+                    numero_de_contratos = contratoitem.Count(),
+                    numero_de_tareas = countTarea,
+                    fecha_primer_contrato = contratoitem.FirstOrDefault().FechaInicioCuidado,
+                    fecha_ultimp_contrato = contratoitem.LastOrDefault().FechaFinCuidado
                 };
                 outListaContrato.Add(outObject);
             }
@@ -82,33 +201,44 @@ namespace Cuidador.Controllers
 
                     foreach (var contratoitemData in data.contrato_item)
                     {
-                        var contratoitem = new ContratoItem
-                        {
-                            ContratoId = contrato.IdContrato, // id que se establecerá después de SaveChangesAsync
-                            EstatusId = 18,
-                            Observaciones = contratoitemData.observaciones,
-                            HorarioInicioPropuesto = contratoitemData.horario_inicio_propuesto,
-                            HorarioFinPropuesto = contratoitemData.horario_fin_propuesto
-                        };
+                        // Asegúrate de que 'diferencia' no sea nulo antes de intentar acceder a sus propiedades
+                        TimeSpan? diferencia = (contratoitemData.horario_fin_propuesto - contratoitemData.horario_inicio_propuesto);
 
-                        _baseDatos.Add(contratoitem);
-                        await _baseDatos.SaveChangesAsync();
-
-                        if (contratoitemData.tareas_contrato != null)
+                        if (diferencia.HasValue)
                         {
-                            foreach (var tareas_contratoData in contratoitemData.tareas_contrato)
+                            // Calcula los minutos sólo si 'diferencia' tiene un valor
+                            decimal minutos = diferencia.Value.Days * 24 * 60 + diferencia.Value.Hours * 60 + diferencia.Value.Minutes;
+                            var persona_cuidador = await _baseDatos.PersonaFisicas.FirstOrDefaultAsync(p => p.IdPersona == data.persona_cuidador_id);
+                            var salario_coidador = await _baseDatos.SalarioCuidadors.FirstOrDefaultAsync(s => s.Usuarioid == persona_cuidador.UsuarioId);
+                            var contratoitem = new ContratoItem
                             {
-                                var tareaContrato = new TareasContrato
+                                ContratoId = contrato.IdContrato, // id que se establecerá después de SaveChangesAsync
+                                EstatusId = 18,
+                                Observaciones = contratoitemData.observaciones,
+                                HorarioInicioPropuesto = contratoitemData.horario_inicio_propuesto,
+                                HorarioFinPropuesto = contratoitemData.horario_fin_propuesto,
+                                ImporteTotal = Math.Round((decimal)(minutos * (salario_coidador.PrecioPorHora / 60)), 2)
+                            };
+
+                            _baseDatos.Add(contratoitem);
+                            await _baseDatos.SaveChangesAsync();
+
+                            if (contratoitemData.tareas_contrato != null)
+                            {
+                                foreach (var tareas_contratoData in contratoitemData.tareas_contrato)
                                 {
-                                    ContratoitemId = contratoitem.IdContratoitem, // id que se establecerá después de SaveChangesAsync
-                                    TituloTarea = tareas_contratoData.TituloTarea,
-                                    DescripcionTarea = tareas_contratoData.DescripcionTarea,
-                                    TipoTarea = tareas_contratoData.TipoTarea,
-                                    EstatusId = 19,
-                                    FechaARealizar = tareas_contratoData?.FechaARealizar,
-                                };
-                                _baseDatos.Add(tareaContrato);
-                                await _baseDatos.SaveChangesAsync();
+                                    var tareaContrato = new TareasContrato
+                                    {
+                                        ContratoitemId = contratoitem.IdContratoitem, // id que se establecerá después de SaveChangesAsync
+                                        TituloTarea = tareas_contratoData.TituloTarea,
+                                        DescripcionTarea = tareas_contratoData.DescripcionTarea,
+                                        TipoTarea = tareas_contratoData.TipoTarea,
+                                        EstatusId = 7,
+                                        FechaARealizar = tareas_contratoData?.FechaARealizar,
+                                    };
+                                    _baseDatos.Add(tareaContrato);
+                                    await _baseDatos.SaveChangesAsync();
+                                }
                             }
                         }
                     }

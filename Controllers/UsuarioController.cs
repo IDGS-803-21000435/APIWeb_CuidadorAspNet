@@ -39,34 +39,42 @@ namespace Cuidador.Controllers
 
             if(usuario.Contrasenia == user.Contrasenia)
             {
-                var persona = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario && p.EsFamiliar == 0).ToArrayAsync();
-                var menus = await (
-                    from Menu in _baseDatos.Menus
-                    where (
-                        from TipousuarioMenu in _baseDatos.TipousuarioMenus
-                        where (
-                            from Usuario in _baseDatos.Usuarios
-                            where Usuario.Usuario1 == user.Usuario
-                            select Usuario.TipoUsuarioid
-                            )
-                        .Contains(TipousuarioMenu.TipousuarioId)
-                         select TipousuarioMenu.MenuId)
-                    .Contains(Menu.IdMenu)
-                    select Menu).ToListAsync();
-
-                var modelOut = new OutLogin
+                try
                 {
-                    IdUsuario = usuario.IdUsuario,
-                    UsuarionivelId = usuario.UsuarionivelId,
-                    TipoUsuarioid = usuario.TipoUsuarioid,
-                    Estatusid = usuario.Estatusid,
-                    Usuario1 = usuario.Usuario1,
-                    Contrasenia = usuario.Contrasenia,
-                    PersonaFisicas = persona,
-                    Menu = menus
-                };
+                    var persona = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario && p.EsFamiliar == 0).ToArrayAsync();
+                    var menus = await (
+                        from Menu in _baseDatos.Menus
+                        where (
+                            from TipousuarioMenu in _baseDatos.TipousuarioMenus
+                            where (
+                                from Usuario in _baseDatos.Usuarios
+                                where Usuario.Usuario1 == user.Usuario
+                                select Usuario.TipoUsuarioid
+                                )
+                            .Contains(TipousuarioMenu.TipousuarioId)
+                            select TipousuarioMenu.MenuId)
+                        .Contains(Menu.IdMenu)
+                        select Menu).ToListAsync();
 
-                return Ok(modelOut);
+                    var modelOut = new OutLogin
+                    {
+                        IdUsuario = usuario.IdUsuario,
+                        UsuarionivelId = usuario.UsuarionivelId,
+                        TipoUsuarioid = usuario.TipoUsuarioid,
+                        Estatusid = usuario.Estatusid,
+                        Usuario1 = usuario.Usuario1,
+                        Contrasenia = usuario.Contrasenia,
+                        PersonaFisicas = persona,
+                        Menu = menus
+                    };
+                    return Ok(modelOut);
+                }
+                catch(Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+
+                
             }
             else
             {
@@ -79,10 +87,10 @@ namespace Cuidador.Controllers
         }
 
         [HttpPost]
-        [Route("loginCuidador")]
+        [Route("loginWeb")]
         public async Task<IActionResult> LoginCuidador([FromBody] UsuarioLoginDTO user)
         {
-            var usuario = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.Usuario1 == user.Usuario && u.TipoUsuarioid == 1);
+            var usuario = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.Usuario1 == user.Usuario);
 
             if (usuario == null)
             {
@@ -94,7 +102,7 @@ namespace Cuidador.Controllers
                 return BadRequest(res);
             }
 
-            if (usuario.Contrasenia == user.Contrasenia)
+            if (usuario.Contrasenia == user.Contrasenia && usuario.TipoUsuarioid == 1)
             {
                 
                 var persona = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.UsuarioId == usuario.IdUsuario);
@@ -107,13 +115,9 @@ namespace Cuidador.Controllers
                 */
 
                 var domicilio = persona != null ? await _baseDatos.Domicilios.SingleOrDefaultAsync(d => d.IdDomicilio == persona.DomicilioId) : null;
-
                 var datosMedicos = persona != null ? await _baseDatos.DatosMedicos.SingleOrDefaultAsync(dm => dm.IdDatosmedicos == persona.DatosMedicosid) : null;
-
                 var padecimientos = datosMedicos != null ? await _baseDatos.Padecimientos.Where(p => p.DatosmedicosId == datosMedicos.IdDatosmedicos).ToListAsync() : new List<Padecimiento>();
-
                 var documentacion = persona != null ? await _baseDatos.Documentacions.Where(d => d.PersonaId == persona.IdPersona).ToListAsync() : new List<Documentacion>();
-
                 var cer = persona != null ? await _baseDatos.CertificacionesExperiencia.Where(c => c.PersonaId == persona.IdPersona).ToListAsync() : new List<CertificacionesExperiencium>();
 
                 var modelOut = new OutLoginCuidador
@@ -128,17 +132,22 @@ namespace Cuidador.Controllers
 
                 return Ok(modelOut);
                 
+            }if(usuario.Contrasenia == user.Contrasenia && usuario.TipoUsuarioid == 0)
+            {
+                return Ok();
             }
             else
             {
                 var res = new
                 {
-                    error = "Contraseña no valida"
+                    error = "Por favor intente de nuevo, si persiste contacte soporte"
                 };
+
                 return BadRequest(res);
             }
         }
 
+        // login a elminar
         [HttpPost]
         [Route("loginCliente")]
         public async Task<IActionResult> Logincliente([FromBody] UsuarioLoginDTO user)
@@ -240,7 +249,7 @@ namespace Cuidador.Controllers
 
 
         [HttpGet]
-        [Route("verUsuario/{idUser}")]
+        [Route("verUsuarioWeb/{idUser}")]
         public async Task<IActionResult> verUsuario(int idUser)
         {
             var us = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.IdUsuario == idUser && u.TipoUsuarioid == 1);
@@ -286,7 +295,7 @@ namespace Cuidador.Controllers
         }
        */
         [HttpGet]
-        [Route("listarDatosUsuario/{idUser}")]
+        [Route("listarDatosUsuarioWeb/{idUser}")]
         public async Task<IActionResult> listarDatos(int idUser)
         {
             /* 
@@ -339,7 +348,7 @@ namespace Cuidador.Controllers
             }            
         }
 
-        [HttpPost("registrarUsuario")]
+        [HttpPost("registrarUsuarioWeb")]
         public async Task<IActionResult> RegistrarUsuario([FromBody] RegistrarUsuarioDTO usuarioDTO)
         {
             if (!ModelState.IsValid)
@@ -347,165 +356,181 @@ namespace Cuidador.Controllers
                 return BadRequest(ModelState);
             }
 
-            var domicilio = new Domicilio
+            using (var transaction = await _baseDatos.Database.BeginTransactionAsync())
             {
-                Calle = usuarioDTO.Domicilio.Calle,
-                Colonia = usuarioDTO.Domicilio.Colonia,
-                NumeroInterior = usuarioDTO.Domicilio.NumeroInterior,
-                NumeroExterior = usuarioDTO.Domicilio.NumeroExterior,
-                Ciudad = usuarioDTO.Domicilio.Ciudad,
-                Estado = usuarioDTO.Domicilio.Estado,
-                Pais = usuarioDTO.Domicilio.Pais,
-                Referencias = usuarioDTO.Domicilio.Referencias,
-                EstatusId = usuarioDTO.Domicilio.EstatusId,
-                FechaRegistro = DateTime.Now,
-                UsuarioRegistro = usuarioDTO.Domicilio.UsuarioRegistro
-            };
-
-            _baseDatos.Domicilios.Add(domicilio);
-            await _baseDatos.SaveChangesAsync();
-
-            var datosMedicos = new DatosMedico
-            {
-                AntecedentesMedicos = usuarioDTO.DatosMedicos.AntecedentesMedicos,
-                Alergias = usuarioDTO.DatosMedicos.Alergias,
-                TipoSanguineo = usuarioDTO.DatosMedicos.TipoSanguineo,
-                NombreMedicofamiliar = usuarioDTO.DatosMedicos.NombreMedicoFamiliar,
-                TelefonoMedicofamiliar = usuarioDTO.DatosMedicos.TelefonoMedicoFamiliar,
-                Observaciones = usuarioDTO.DatosMedicos.Observaciones,
-                FechaRegistro = DateTime.Now,
-                UsuarioRegistro = usuarioDTO.Domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
-            };
-
-            _baseDatos.DatosMedicos.Add(datosMedicos);
-            await _baseDatos.SaveChangesAsync();
-
-            var padecimientos = new List<Padecimiento>();
-
-            foreach (var padecimientoDTO in usuarioDTO.Padecimientos)
-            {
-                var padecimiento = new Padecimiento
+                try
                 {
-                    DatosmedicosId = datosMedicos.IdDatosmedicos,
-                    Nombre = padecimientoDTO.Nombre,
-                    Descripcion = padecimientoDTO.Descripcion,
-                    PadeceDesde = padecimientoDTO.PadeceDesde,
-                    FechaRegistro = DateTime.Now,
-                    UsuarioRegistro = padecimientoDTO.UsuarioRegistro
-                };
+                    var domicilio = new Domicilio
+                    {
+                        Calle = usuarioDTO.domicilio.Calle,
+                        Colonia = usuarioDTO.domicilio.Colonia,
+                        NumeroInterior = usuarioDTO.domicilio.NumeroInterior,
+                        NumeroExterior = usuarioDTO.domicilio.NumeroExterior,
+                        Ciudad = usuarioDTO.domicilio.Ciudad,
+                        Estado = usuarioDTO.domicilio.Estado,
+                        Pais = usuarioDTO.domicilio.Pais,
+                        Referencias = usuarioDTO.domicilio.Referencias,
+                        EstatusId = usuarioDTO.domicilio.EstatusId,
+                        FechaRegistro = DateTime.Now,
+                        UsuarioRegistro = usuarioDTO.domicilio.UsuarioRegistro
+                    };
 
-                padecimientos.Add(padecimiento);
+                    _baseDatos.Domicilios.Add(domicilio);
+                    await _baseDatos.SaveChangesAsync();
+
+                    var datosMedicos = new DatosMedico
+                    {
+                        AntecedentesMedicos = usuarioDTO.datos_medicos.AntecedentesMedicos,
+                        Alergias = usuarioDTO.datos_medicos.Alergias,
+                        TipoSanguineo = usuarioDTO.datos_medicos.TipoSanguineo,
+                        NombreMedicofamiliar = usuarioDTO.datos_medicos.NombreMedicoFamiliar,
+                        TelefonoMedicofamiliar = usuarioDTO.datos_medicos.TelefonoMedicoFamiliar,
+                        Observaciones = usuarioDTO.datos_medicos.Observaciones,
+                        FechaRegistro = DateTime.Now,
+                        UsuarioRegistro = usuarioDTO.domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
+                    };
+
+                    _baseDatos.DatosMedicos.Add(datosMedicos);
+                    await _baseDatos.SaveChangesAsync();
+
+                    var padecimientos = new List<Padecimiento>();
+
+                    foreach (var padecimientoDTO in usuarioDTO.padecimientos)
+                    {
+                        var padecimiento = new Padecimiento
+                        {
+                            DatosmedicosId = datosMedicos.IdDatosmedicos,
+                            Nombre = padecimientoDTO.Nombre,
+                            Descripcion = padecimientoDTO.Descripcion,
+                            PadeceDesde = padecimientoDTO.PadeceDesde,
+                            FechaRegistro = DateTime.Now,
+                            UsuarioRegistro = padecimientoDTO.UsuarioRegistro
+                        };
+
+                        padecimientos.Add(padecimiento);
+                    }
+
+                    _baseDatos.Padecimientos.AddRange(padecimientos);
+                    await _baseDatos.SaveChangesAsync();
+
+                    var usuario = new Usuario
+                    {
+                        UsuarionivelId = 6,
+                        TipoUsuarioid = usuarioDTO.usuario.TipoUsuarioId,
+                        Estatusid = usuarioDTO.usuario.EstatusId,
+                        Usuario1 = usuarioDTO.usuario.Usuario,
+                        Contrasenia = usuarioDTO.usuario.Contrasenia,
+                        FechaRegistro = DateTime.Now,
+                        UsuarioRegistro = usuarioDTO.domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
+                    };
+
+                    _baseDatos.Usuarios.Add(usuario);
+                    await _baseDatos.SaveChangesAsync();
+
+                    var persona = new PersonaFisica
+                    {
+                        Nombre = usuarioDTO.persona.Nombre,
+                        ApellidoPaterno = usuarioDTO.persona.ApellidoPaterno,
+                        ApellidoMaterno = usuarioDTO.persona.ApellidoMaterno,
+                        CorreoElectronico = usuarioDTO.persona.CorreoElectronico,
+                        FechaNacimiento = usuarioDTO.persona.FechaNacimiento,
+                        Genero = usuarioDTO.persona.Genero,
+                        EstadoCivil = usuarioDTO.persona.EstadoCivil,
+                        Rfc = usuarioDTO.persona.RFC,
+                        Curp = usuarioDTO.persona.CURP,
+                        TelefonoParticular = usuarioDTO.persona.TelefonoParticular,
+                        TelefonoMovil = usuarioDTO.persona.TelefonoMovil,
+                        TelefonoEmergencia = usuarioDTO.persona.TelefonoEmergencia,
+                        NombrecompletoFamiliar = usuarioDTO.persona.NombreCompletoFamiliar,
+                        DomicilioId = domicilio.IdDomicilio, // Recuperado después de insertar domicilio
+                        DatosMedicosid = datosMedicos.IdDatosmedicos, // Recuperado después de insertar datos médicos
+                        AvatarImage = usuarioDTO.persona.AvatarImage,
+                        EstatusId = usuarioDTO.persona.EstatusId,
+                        FechaRegistro = DateTime.Now, // Se coloca en el controlador
+                        UsuarioRegistro = usuarioDTO.domicilio.UsuarioRegistro, /*PUEDE TENER DETALLE*/
+                        UsuarioId = usuario.IdUsuario
+                    };
+
+                    _baseDatos.PersonaFisicas.Add(persona);
+                    await _baseDatos.SaveChangesAsync();
+
+                    var documentaciones = new List<Documentacion>();
+
+                    foreach (var listaDocumentacion in usuarioDTO.documentacion)
+                    {
+                        var documentacion = new Documentacion
+                        {
+                            PersonaId = persona.IdPersona,
+                            TipoDocumento = listaDocumentacion.TipoDocumento,
+                            NombreDocumento = listaDocumentacion.NombreDocumento,
+                            UrlDocumento = listaDocumentacion.UrlDocumento,
+                            FechaEmision = listaDocumentacion.FechaEmision,
+                            FechaExpiracion = listaDocumentacion.FechaExpiracion,
+                            Version = listaDocumentacion.Version,
+                            EstatusId = listaDocumentacion.EstatusId,
+                            FechaRegistro = DateTime.Now, // Se coloca en el controlador
+                            UsuarioRegistro = usuarioDTO.domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
+                        };
+
+                        documentaciones.Add(documentacion);
+                    }
+
+                    _baseDatos.AddRange(documentaciones);
+                    await _baseDatos.SaveChangesAsync();
+
+                    var certificacionesExp = new List<CertificacionesExperiencium>();
+
+                    foreach (var certificacionExp in usuarioDTO.CertificacionesExperiencia.certificaciones)
+                    {
+                        var documento = new Documentacion
+                        {
+                            PersonaId = persona.IdPersona,
+                            TipoDocumento = certificacionExp.Documento.TipoDocumento,
+                            NombreDocumento = certificacionExp.Documento.NombreDocumento,
+                            UrlDocumento = certificacionExp.Documento.UrlDocumento,
+                            FechaEmision = certificacionExp.Documento.FechaEmision,
+                            FechaExpiracion = certificacionExp.Documento.FechaExpiracion,
+                            Version = certificacionExp.Documento.Version,
+                            EstatusId = certificacionExp.Documento.EstatusId,
+                            FechaRegistro = DateTime.Now, // Se coloca en el controlador
+                            UsuarioRegistro = usuarioDTO.domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
+
+                        };
+
+                        _baseDatos.Add(documento);
+                        await _baseDatos.SaveChangesAsync();
+
+                        var certificacionExperiencia = new CertificacionesExperiencium
+                        {
+                            TipoCertificacion = certificacionExp.Certificacion.TipoCertificacion,
+                            InstitucionEmisora = certificacionExp.Certificacion.InstitucionEmisora,
+                            FechaCertificacion = certificacionExp.Certificacion.FechaCertificacion,
+                            Vigente = certificacionExp.Certificacion.Vigente,
+                            Descripcion = certificacionExp.Certificacion.Descripcion,
+                            FechaRegistro = DateTime.Now, // Se coloca en el controlador
+                            UsuarioRegistro = usuarioDTO.domicilio.UsuarioRegistro, /*PUEDE TENER DETALLE*/
+                            PersonaId = persona.IdPersona,
+                            DocumentoId = documento.IdDocumentacion
+                        };
+
+                        certificacionesExp.Add(certificacionExperiencia);
+                        await _baseDatos.SaveChangesAsync();
+
+                    }
+
+                    // Si todas las operaciones son exitosas, se confirman los cambios
+                    await transaction.CommitAsync();
+
+                    return Ok(new { res = "Se regstro exitosamente" });
+                }
+                catch (Exception ex)
+                {
+                    // Si ocurre un error, se revierte toda la transacción
+                    await transaction.RollbackAsync();
+
+                    return BadRequest(ex.Message);
+                }
             }
-
-            _baseDatos.Padecimientos.AddRange(padecimientos);
-            await _baseDatos.SaveChangesAsync();
-
-            var usuario = new Usuario
-            {
-                UsuarionivelId = 6,
-                TipoUsuarioid = usuarioDTO.Usuario.TipoUsuarioId,
-                Estatusid = usuarioDTO.Usuario.EstatusId,
-                Usuario1 = usuarioDTO.Usuario.Usuario,
-                Contrasenia = usuarioDTO.Usuario.Contrasenia,
-                FechaRegistro = DateTime.Now,
-                UsuarioRegistro = usuarioDTO.Domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
-            };            
-            
-            _baseDatos.Usuarios.Add(usuario);
-            await _baseDatos.SaveChangesAsync();
-            
-            var persona = new PersonaFisica
-            {
-                Nombre = usuarioDTO.Persona.Nombre,
-                ApellidoPaterno = usuarioDTO.Persona.ApellidoPaterno,
-                ApellidoMaterno = usuarioDTO.Persona.ApellidoMaterno,
-                CorreoElectronico = usuarioDTO.Persona.CorreoElectronico,
-                FechaNacimiento = usuarioDTO.Persona.FechaNacimiento,
-                Genero = usuarioDTO.Persona.Genero,
-                EstadoCivil = usuarioDTO.Persona.EstadoCivil,
-                Rfc = usuarioDTO.Persona.RFC,
-                Curp = usuarioDTO.Persona.CURP,
-                TelefonoParticular = usuarioDTO.Persona.TelefonoParticular,
-                TelefonoMovil = usuarioDTO.Persona.TelefonoMovil,
-                TelefonoEmergencia = usuarioDTO.Persona.TelefonoEmergencia,
-                NombrecompletoFamiliar = usuarioDTO.Persona.NombreCompletoFamiliar,
-                DomicilioId = domicilio.IdDomicilio, // Recuperado después de insertar domicilio
-                DatosMedicosid = datosMedicos.IdDatosmedicos, // Recuperado después de insertar datos médicos
-                AvatarImage = usuarioDTO.Persona.AvatarImage,
-                EstatusId = usuarioDTO.Persona.EstatusId,
-                FechaRegistro = DateTime.Now, // Se coloca en el controlador
-                UsuarioRegistro = usuarioDTO.Domicilio.UsuarioRegistro, /*PUEDE TENER DETALLE*/
-                UsuarioId = usuario.IdUsuario
-            };
-
-            _baseDatos.PersonaFisicas.Add(persona);
-            await _baseDatos.SaveChangesAsync();
-
-            var documentaciones = new List<Documentacion>();
-
-            foreach(var listaDocumentacion in usuarioDTO.Documentacion)
-            {
-                var documentacion = new Documentacion
-                {
-                    PersonaId = persona.IdPersona,
-                    TipoDocumento = listaDocumentacion.TipoDocumento,
-                    NombreDocumento = listaDocumentacion.NombreDocumento,
-                    UrlDocumento = listaDocumentacion.UrlDocumento,
-                    FechaEmision = listaDocumentacion.FechaEmision,
-                    FechaExpiracion = listaDocumentacion.FechaExpiracion,
-                    Version = listaDocumentacion.Version,
-                    EstatusId = listaDocumentacion.EstatusId,
-                    FechaRegistro = DateTime.Now, // Se coloca en el controlador
-                    UsuarioRegistro = usuarioDTO.Domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
-                };
-
-                documentaciones.Add(documentacion);
-            }
-
-            _baseDatos.AddRange(documentaciones);
-            await _baseDatos.SaveChangesAsync();
-
-            var certificacionesExp = new List<CertificacionesExperiencium>();
-
-            foreach (var certificacionExp in usuarioDTO.CertificacionesExperiencia)
-            {
-                var documento = new Documentacion
-                {
-                    PersonaId = persona.IdPersona,
-                    TipoDocumento = certificacionExp.Documento.TipoDocumento,
-                    NombreDocumento = certificacionExp.Documento.NombreDocumento,
-                    UrlDocumento = certificacionExp.Documento.UrlDocumento,
-                    FechaEmision = certificacionExp.Documento.FechaEmision,
-                    FechaExpiracion = certificacionExp.Documento.FechaExpiracion,
-                    Version = certificacionExp.Documento.Version,
-                    EstatusId = certificacionExp.Documento.EstatusId,
-                    FechaRegistro = DateTime.Now, // Se coloca en el controlador
-                    UsuarioRegistro = usuarioDTO.Domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
-
-                };
-
-                _baseDatos.Add(documento);
-                await _baseDatos.SaveChangesAsync();
-
-                var certificacionExperiencia = new CertificacionesExperiencium
-                {
-                    TipoCertificacion = certificacionExp.Certificacion.TipoCertificacion,
-                    InstitucionEmisora = certificacionExp.Certificacion.InstitucionEmisora,
-                    FechaCertificacion = certificacionExp.Certificacion.FechaCertificacion,
-                    Vigente = certificacionExp.Certificacion.Vigente,
-                    Descripcion = certificacionExp.Certificacion.Descripcion,
-                    FechaRegistro = DateTime.Now, // Se coloca en el controlador
-                    UsuarioRegistro = usuarioDTO.Domicilio.UsuarioRegistro, /*PUEDE TENER DETALLE*/
-                    PersonaId = persona.IdPersona,
-                    DocumentoId = documento.IdDocumentacion
-                };
-
-                certificacionesExp.Add(certificacionExperiencia);
-                await _baseDatos.SaveChangesAsync();
-
-            }
-
-            return Ok();
         }
     }
 }

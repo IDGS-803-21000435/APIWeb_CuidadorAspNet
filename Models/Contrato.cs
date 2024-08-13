@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -24,8 +25,8 @@ public partial class Contrato
     public virtual ICollection<ContratoItem> ContratoItems { get; set; } = new List<ContratoItem>();
 
     public virtual Estatus Estatus { get; set; } = null!;
-
+    [JsonIgnore] 
     public virtual PersonaFisica PersonaidClienteNavigation { get; set; } = null!;
-
+    [JsonIgnore]
     public virtual PersonaFisica PersonaidCuidadorNavigation { get; set; } = null!;
 }

@@ -2,12 +2,12 @@
 {
     public class RegistrarUsuarioDTO
     {
-        public DomicilioDTO Domicilio { get; set; }
-        public DatosMedicosDTO DatosMedicos { get; set; }
-        public List<PadecimientoDTO> Padecimientos { get; set; }
-        public UsuarioDTO Usuario { get; set; }
-        public PersonaDTO Persona { get; set; }
-        public List<DocumentacionDTO> Documentacion { get; set; }
-        public List<CertificacionExperienciaDTO> CertificacionesExperiencia { get; set; }
+        public DomicilioDTO domicilio { get; set; }
+        public DatosMedicosDTO datos_medicos { get; set; }
+        public List<PadecimientoDTO> padecimientos { get; set; }
+        public UsuarioDTO usuario { get; set; }
+        public PersonaDTO persona { get; set; }
+        public List<DocumentacionDTO> documentacion { get; set; }
+        public CertificacionExperienciaAUXDTO CertificacionesExperiencia { get; set; }
     }
 }

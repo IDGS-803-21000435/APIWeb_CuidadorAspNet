@@ -81,7 +81,7 @@ public partial class DbAaaabeCuidadorContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=sql8006.site4now.net;Database=db_aaaabe_cuidador;User Id=db_aaaabe_cuidador_admin;Password=Dellsvcs1!.;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=sql8006.site4now.net;Database=db_aaaabe_cuidador;User Id=db_aaaabe_cuidador_admin;Password=Dellsvcs1!.;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -334,6 +334,9 @@ public partial class DbAaaabeCuidadorContext : DbContext
             entity.Property(e => e.HorarioInicioPropuesto)
                 .HasColumnType("datetime")
                 .HasColumnName("horario_inicio_propuesto");
+            entity.Property(e => e.ImporteTotal)
+                .HasColumnType("decimal(10, 4)")
+                .HasColumnName("importe_total");
             entity.Property(e => e.Observaciones)
                 .HasMaxLength(200)
                 .IsUnicode(false)

@@ -27,7 +27,7 @@ public partial class Estatus
     public virtual ICollection<CapacitacionUsuario> CapacitacionUsuarios { get; set; } = new List<CapacitacionUsuario>();
 
     public virtual ICollection<Capacitacion> Capacitacions { get; set; } = new List<Capacitacion>();
-
+    [JsonIgnore]
     public virtual ICollection<ContratoItem> ContratoItems { get; set; } = new List<ContratoItem>();
     [JsonIgnore]
     public virtual ICollection<Contrato> Contratos { get; set; } = new List<Contrato>();
@@ -41,7 +41,7 @@ public partial class Estatus
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
 
     public virtual ICollection<Saldo> Saldos { get; set; } = new List<Saldo>();
-
+    [JsonIgnore]
     public virtual ICollection<TareasContrato> TareasContratos { get; set; } = new List<TareasContrato>();
 
     public virtual TipoEstatus Tipoestatus { get; set; } = null!;
