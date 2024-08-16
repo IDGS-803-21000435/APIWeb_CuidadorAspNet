@@ -43,7 +43,7 @@ namespace Cuidador.Controllers
             {
                 try
                 {
-                    var persona = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario && p.EsFamiliar == 0).ToArrayAsync();
+                    var persona = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario && p.EsFamiliar == 0 && p.EstatusId == 10).ToArrayAsync();
                     var menus = await (
                         from Menu in _baseDatos.Menus
                         where (
@@ -407,14 +407,14 @@ namespace Cuidador.Controllers
         public async Task<IActionResult> verCuidadores()
         {
             var outLista = new List<OUTVerCuidador>();
-            var usuarios = await _baseDatos.Usuarios.Where(u => u.TipoUsuarioid == 1).ToListAsync();
+            var usuarios = await _baseDatos.Usuarios.Where(u => u.TipoUsuarioid == 1 && u.Estatusid == 10).ToListAsync();
             try
             {
                 foreach (var us in usuarios)
                 {
                     var nivelUsuario = await _baseDatos.NivelUsuarios.SingleOrDefaultAsync(n => n.IdNivelusuario == us.UsuarionivelId);
                     var personas = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == us.IdUsuario).ToListAsync();
-                    if (personas == null || personas.Count == 0)
+                    if (personas == null)
                     {
                         personas = null;
                     }
@@ -470,6 +470,18 @@ namespace Cuidador.Controllers
                     if (salario == null)
                     {
                         salario = null;
+                        var datosOut = new OUTVerCuidador
+                        {
+                            idUsuario = us.IdUsuario,
+                            usuario = us.Usuario1,
+                            nivelUsuario = nivelUsuario.NombreNivel,
+                            comentariosUsuario = comentarios,//lista comentarios
+                            certificaciones = certificacionesExperiencia, //lista certificaciones
+                            personaFisica = listaPersonas, //lista personasfisicas
+                            cuidadosrealizados = contratosRealizados.Count(), //cuidados realizados
+                            salarioCuidador = 0, //salarios
+                        };
+                        outLista.Add(datosOut);
                     }
                     else
                     {

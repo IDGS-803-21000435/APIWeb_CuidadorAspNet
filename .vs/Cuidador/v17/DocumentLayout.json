@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\controllers\\usuariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\usuariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\controllers\\doocumentoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\doocumentoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\controllers\\finanzascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\finanzascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\controllers\\usuariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\usuariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\controllers\\hubhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,24 +38,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "DoocumentosController.cs",
               "DocumentMoniker": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Controllers\\DoocumentosController.cs",
               "RelativeDocumentMoniker": "Controllers\\DoocumentosController.cs",
               "ToolTip": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Controllers\\DoocumentosController.cs",
               "RelativeToolTip": "Controllers\\DoocumentosController.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAALAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-08-16T01:26:29.69Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "FinanzasController.cs",
               "DocumentMoniker": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Controllers\\FinanzasController.cs",
               "RelativeDocumentMoniker": "Controllers\\FinanzasController.cs",
@@ -120,13 +120,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "UsuarioController.cs",
               "DocumentMoniker": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Controllers\\UsuarioController.cs",
               "RelativeDocumentMoniker": "Controllers\\UsuarioController.cs",
               "ToolTip": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Controllers\\UsuarioController.cs",
               "RelativeToolTip": "Controllers\\UsuarioController.cs",
-              "ViewState": "AQIAAGMCAAAAAAAAAAAYwHQCAAAlAAAA",
+              "ViewState": "AQIAAI4BAAAAAAAAAAAswM8BAAApAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-08-12T19:53:14.301Z",
               "EditorCaption": ""
