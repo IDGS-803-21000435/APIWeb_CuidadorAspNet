@@ -35,7 +35,7 @@ public partial class Usuario
     public virtual ICollection<MetodoPagoUsuario> MetodoPagoUsuarios { get; set; } = new List<MetodoPagoUsuario>();
     [JsonIgnore]
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
-
+    [JsonIgnore]
     public virtual ICollection<SalarioCuidador> SalarioCuidadors { get; set; } = new List<SalarioCuidador>();
 
     public virtual ICollection<Saldo> Saldos { get; set; } = new List<Saldo>();
@@ -45,7 +45,7 @@ public partial class Usuario
     public virtual ICollection<TarjetaUsuario> TarjetaUsuarios { get; set; } = new List<TarjetaUsuario>();
 
     public virtual TipoUsuario TipoUsuario { get; set; } = null!;
-
+ 
     public virtual NivelUsuario Usuarionivel { get; set; } = null!;
 
     public virtual ICollection<VersionesMovil> VersionesMovils { get; set; } = new List<VersionesMovil>();

@@ -1,4 +1,5 @@
 ﻿using Cuidador.Models;
+using System.Text.Json.Serialization;
 
 namespace Cuidador.Dto.User.IniciarSesion
 {

@@ -2,7 +2,6 @@
 {
     public class UsuarioDTO
     {
-        public int UsuarioNivelId { get; set; }
         public int TipoUsuarioId { get; set; }
         public int EstatusId { get; set; }
         public string Usuario { get; set; }

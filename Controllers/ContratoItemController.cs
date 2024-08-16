@@ -5,6 +5,7 @@ using Cuidador.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Cuidador.Dto;
 
 namespace Cuidador.Controllers
 {
@@ -118,7 +119,7 @@ namespace Cuidador.Controllers
 
             var personaUsuario = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == idUsuario).ToListAsync();
             var contratos = new List<Contrato>();
-            
+
             if (tipousuarioid == 1) // cuidador
             {
                 foreach (var listpersona in personaUsuario)
@@ -135,39 +136,35 @@ namespace Cuidador.Controllers
                     contratos.AddRange(contrato);
                 }
             }
-            
+
             var outListaContrato = new List<OUTListarContrato>();
 
-            var count = 0;
-            var countTarea = 0;
             foreach (var listasContrato in contratos)
             {
-                
-
                 var persona_cuidador = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.IdPersona == listasContrato.PersonaidCuidador);
                 var persona_cliente = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.IdPersona == listasContrato.PersonaidCliente);
-                var estatus = await _baseDatos.Estatuses.SingleOrDefaultAsync(e => e.IdEstatus == listasContrato.EstatusId);
+
 
                 var contratoitem = await _baseDatos.ContratoItems.Where(c => c.ContratoId == listasContrato.IdContrato).ToListAsync();
-                
-                foreach (var itm in contratoitem)
+
+                foreach (var i in contratoitem)
                 {
-                    var tarea = await _baseDatos.TareasContratos.Where(t => t.ContratoitemId == itm.ContratoId).ToListAsync();
-                    countTarea= tarea.Count;
+                    var estatus = await _baseDatos.Estatuses.SingleOrDefaultAsync(e => e.IdEstatus == i.EstatusId);
+                    var obj = new OUTListarContrato
+                    {
+                        id_contrato = listasContrato.IdContrato,
+                        id_contrato_item = i.IdContratoitem,
+                        horario_inicio = i.HorarioInicioPropuesto ?? DateTime.MinValue,
+                        horario_fin = i.HorarioFinPropuesto ?? DateTime.MinValue,
+                        estatus = estatus,
+                        persona_cuidador = persona_cuidador,
+                        persona_cliente = persona_cliente,
+                        importe_cuidado = i.ImporteTotal ?? 0,
+                        numero_de_tareas = await _baseDatos.TareasContratos.Where(t => t.ContratoitemId == i.IdContratoitem).CountAsync()
+                    };
+                    outListaContrato.Add(obj);
                 }
 
-                var outObject = new OUTListarContrato
-                {
-                    id_contrato = listasContrato.IdContrato,
-                    persona_cliente = persona_cliente,
-                    persona_cuidador = persona_cuidador,
-                    estatus = estatus,
-                    numero_de_contratos = contratoitem.Count(),
-                    numero_de_tareas = countTarea,
-                    fecha_primer_contrato = contratoitem.FirstOrDefault().FechaInicioCuidado,
-                    fecha_ultimp_contrato = contratoitem.LastOrDefault().FechaFinCuidado
-                };
-                outListaContrato.Add(outObject);
             }
 
             return Ok(outListaContrato);
@@ -270,5 +267,35 @@ namespace Cuidador.Controllers
                 }
             }
         }
+
+        // codigo kev
+
+        [HttpPost]
+        [Route("cambiarEstatusContratoItem")]
+        public async Task<IActionResult> CambiarEstatusContratoItem(OUTChangeEstatus change)
+        {
+            using (var transaction = await _baseDatos.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    ContratoItem? item = await _baseDatos.ContratoItems.FindAsync(change.id_contrato_item);
+                    if (item == null) return BadRequest("Id de item no encontrado");
+
+                    item.EstatusId = change.id_estatus;
+                    item.FechaAceptacion = DateTime.Now;
+                    _baseDatos.ContratoItems.Update(item);
+                    await _baseDatos.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    return Ok(new { success = true });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, $"Ocurrió un error: {ex.Message}");
+                }
+            }
+        }        
     }
 }

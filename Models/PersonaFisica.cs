@@ -63,7 +63,6 @@ public partial class PersonaFisica
     public virtual ICollection<Contrato> ContratoPersonaidClienteNavigations { get; set; } = new List<Contrato>();
     [JsonIgnore]
     public virtual ICollection<Contrato> ContratoPersonaidCuidadorNavigations { get; set; } = new List<Contrato>();
-
     public virtual DatosMedico? DatosMedicos { get; set; }
 
     public virtual ICollection<Documentacion> Documentacions { get; set; } = new List<Documentacion>();
@@ -71,6 +70,6 @@ public partial class PersonaFisica
     public virtual Domicilio Domicilio { get; set; } = null!;
 
     public virtual Estatus? Estatus { get; set; }
-
+    [JsonIgnore]
     public virtual Usuario Usuario { get; set; } = null!;
 }

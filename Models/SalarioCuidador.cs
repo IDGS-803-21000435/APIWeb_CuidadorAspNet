@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -20,6 +21,6 @@ public partial class SalarioCuidador
     public int? UsuarioModifico { get; set; }
 
     public int? Concurrencia { get; set; }
-
+    [JsonIgnore]
     public virtual Usuario Usuario { get; set; } = null!;
 }

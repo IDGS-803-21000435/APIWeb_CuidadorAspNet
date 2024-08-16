@@ -118,7 +118,7 @@
         }
       }
     },
-    "/api/Usuario/loginCuidador": {
+    "/api/Usuario/loginWeb": {
       "post": {
         "tags": [
           "Usuario"
@@ -144,7 +144,73 @@
         }
       }
     },
-    "/api/Usuario/loginCliente": {
+    "/api/Usuario/verUsuarioWeb/{idUser}": {
+      "get": {
+        "tags": [
+          "Usuario"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idUser",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Usuario/listarDatosUsuarioWeb/{idUser}": {
+      "get": {
+        "tags": [
+          "Usuario"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "idUser",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Usuario/verCuidadores": {
+      "get": {
+        "tags": [
+          "Usuario"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Usuario/mostrarDatosCuidadoresWeb": {
+      "get": {
+        "tags": [
+          "Usuario"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Usuario/registrarFamiliarWeb": {
       "post": {
         "tags": [
           "Usuario"
@@ -159,7 +225,7 @@
             "in": "body",
             "name": "body",
             "schema": {
-              "$ref": "#/definitions/UsuarioLoginDTO"
+              "$ref": "#/definitions/RegistrarFamiliar"
             }
           }
         ],
@@ -170,49 +236,7 @@
         }
       }
     },
-    "/api/Usuario/verUsuario/{idUser}": {
-      "get": {
-        "tags": [
-          "Usuario"
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "idUser",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Usuario/listarDatosUsuario/{idUser}": {
-      "get": {
-        "tags": [
-          "Usuario"
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "idUser",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/Usuario/registrarUsuario": {
+    "/api/Usuario/registrarUsuarioWeb": {
       "post": {
         "tags": [
           "Usuario"
@@ -243,10 +267,6 @@
     "CertificacionDTO": {
       "type": "object",
       "properties": {
-        "idCertificacion": {
-          "format": "int32",
-          "type": "integer"
-        },
         "tipoCertificacion": {
           "type": "string"
         },
@@ -262,30 +282,18 @@
         },
         "descripcion": {
           "type": "string"
-        },
-        "fechaRegistro": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "usuarioRegistro": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "fechaModificacion": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "usuarioModifico": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "personaId": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "documentoId": {
-          "format": "int32",
-          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CertificacionExperienciaAUXDTO": {
+      "type": "object",
+      "properties": {
+        "certificaciones": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CertificacionExperienciaDTO"
+          }
         }
       },
       "additionalProperties": false
@@ -352,10 +360,6 @@
     "DocumentacionDTO": {
       "type": "object",
       "properties": {
-        "personaId": {
-          "format": "int32",
-          "type": "integer"
-        },
         "tipoDocumento": {
           "type": "string"
         },
@@ -378,22 +382,6 @@
           "type": "integer"
         },
         "estatusId": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "fechaRegistro": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "usuarioRegistro": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "fechaModificacion": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "usuarioModifico": {
           "format": "int32",
           "type": "integer"
         }
@@ -431,19 +419,7 @@
           "format": "int32",
           "type": "integer"
         },
-        "fechaRegistro": {
-          "format": "date-time",
-          "type": "string"
-        },
         "usuarioRegistro": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "fechaModificacion": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "usuarioModifico": {
           "format": "int32",
           "type": "integer"
         }
@@ -453,10 +429,6 @@
     "PadecimientoDTO": {
       "type": "object",
       "properties": {
-        "datosMedicosId": {
-          "format": "int32",
-          "type": "integer"
-        },
         "nombre": {
           "type": "string"
         },
@@ -466,22 +438,6 @@
         "padeceDesde": {
           "format": "date",
           "type": "string"
-        },
-        "fechaRegistro": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "usuarioRegistro": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "fechaModificacion": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "usuarioModifico": {
-          "format": "int32",
-          "type": "integer"
         }
       },
       "additionalProperties": false
@@ -543,22 +499,6 @@
         "estatusId": {
           "format": "int32",
           "type": "integer"
-        },
-        "fechaRegistro": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "usuarioRegistro": {
-          "format": "int32",
-          "type": "integer"
-        },
-        "fechaModificacion": {
-          "format": "date-time",
-          "type": "string"
-        },
-        "usuarioModifico": {
-          "format": "int32",
-          "type": "integer"
         }
       },
       "additionalProperties": false
@@ -583,13 +523,43 @@
       },
       "additionalProperties": false
     },
+    "RegistrarFamiliar": {
+      "type": "object",
+      "properties": {
+        "domicilio": {
+          "$ref": "#/definitions/DomicilioDTO"
+        },
+        "padecimientos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PadecimientoDTO"
+          }
+        },
+        "datos_medicos": {
+          "$ref": "#/definitions/DatosMedicosDTO"
+        },
+        "usuario": {
+          "$ref": "#/definitions/UsuarioDTO"
+        },
+        "persona": {
+          "$ref": "#/definitions/PersonaDTO"
+        },
+        "documentacion": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DocumentacionDTO"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "RegistrarUsuarioDTO": {
       "type": "object",
       "properties": {
         "domicilio": {
           "$ref": "#/definitions/DomicilioDTO"
         },
-        "datosMedicos": {
+        "datos_medicos": {
           "$ref": "#/definitions/DatosMedicosDTO"
         },
         "padecimientos": {
@@ -611,10 +581,7 @@
           }
         },
         "certificacionesExperiencia": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/CertificacionExperienciaDTO"
-          }
+          "$ref": "#/definitions/CertificacionExperienciaAUXDTO"
         }
       },
       "additionalProperties": false
@@ -649,10 +616,6 @@
     "UsuarioDTO": {
       "type": "object",
       "properties": {
-        "usuarioNivelId": {
-          "format": "int32",
-          "type": "integer"
-        },
         "tipoUsuarioId": {
           "format": "int32",
           "type": "integer"
