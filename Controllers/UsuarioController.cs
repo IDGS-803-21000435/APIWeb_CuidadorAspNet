@@ -8,6 +8,7 @@ using Cuidador.Dto.User.IniciarSesion;
 using Cuidador.Dto.User.RegistrarUsuario;
 using Cuidador.Dto.User.RegistrarFamiliar;
 using Cuidador.Dto.User.ListarCuidador;
+using System.Text.Json;
 
 namespace Cuidador.Controllers
 {
@@ -496,7 +497,136 @@ namespace Cuidador.Controllers
             }
         }
 
+        [HttpGet("verCuidadores2")]
+        public async Task<IActionResult> VerCuidadores2()
+        {
 
+            var cuidadores = await _baseDatos.Usuarios
+                .Where(u => u.TipoUsuarioid == 1)
+                .Select(u => new
+                {
+                    u.IdUsuario,
+                    u.UsuarionivelId,
+                    u.TipoUsuarioid,
+                    u.Estatusid,
+                    u.Usuario1,
+                    u.Contrasenia,
+                    u.FechaRegistro,
+                    u.UsuarioRegistro,
+                    u.FechaModificacion,
+                    u.UsuarioModifico,
+                    personas = _baseDatos.PersonaFisicas
+                        .Where(p => p.UsuarioId == u.IdUsuario)
+                        .Select(p => new {
+                            p.IdPersona,
+                            p.UsuarioId,
+                            p.Nombre,
+                            p.ApellidoPaterno,
+                            p.ApellidoMaterno,
+                            p.CorreoElectronico,
+                            p.FechaNacimiento,
+                            p.Genero,
+                            p.EstadoCivil,
+                            p.Rfc,
+                            p.Curp,
+                            p.TelefonoParticular,
+                            p.TelefonoMovil,
+                            p.TelefonoEmergencia,
+                            p.NombrecompletoFamiliar,
+                            p.DomicilioId,
+                            p.DatosMedicosid,
+                            p.AvatarImage,
+                            p.EstatusId,
+                            p.FechaRegistro,
+                            p.UsuarioRegistro,
+                            p.FechaModificacion,
+                            p.UsuarioModifico
+                        }).FirstOrDefault(),
+                    documentacion = _baseDatos.Documentacions
+                        .Where(d => d.PersonaId == u.IdUsuario)
+                        .Select(d => new {
+                            d.IdDocumentacion,
+                            d.PersonaId,
+                            d.TipoDocumento,
+                            d.NombreDocumento,
+                            d.UrlDocumento,
+                            d.FechaEmision,
+                            d.FechaExpiracion,
+                            d.Version,
+                            d.EstatusId,
+                            d.FechaRegistro,
+                            d.UsuarioRegistro,
+                            d.FechaModificacion,
+                            d.UsuarioModifico
+                        }).ToList(),
+                    certificaciones = _baseDatos.CertificacionesExperiencia
+                        .Where(c => c.PersonaId == u.IdUsuario)
+                        .Select(c => new {
+                            c.IdCertificacion,
+                            c.TipoCertificacion,
+                            c.InstitucionEmisora,
+                            c.FechaCertificacion,
+                            c.Vigente,
+                            c.Descripcion,
+                            c.FechaRegistro,
+                            c.UsuarioRegistro,
+                            c.FechaModificacion,
+                            c.UsuarioModifico
+                        }).ToList(),
+                    domicilio = _baseDatos.Domicilios
+                        .Where(d => d.IdDomicilio == u.IdUsuario)
+                        .Select(d => new {
+                            d.IdDomicilio,
+                            d.Calle,
+                            d.Colonia,
+                            d.NumeroInterior,
+                            d.NumeroExterior,
+                            d.Ciudad,
+                            d.Estado,
+                            d.Pais,
+                            d.Referencias,
+                            d.EstatusId,
+                            d.FechaRegistro,
+                            d.UsuarioRegistro,
+                            d.FechaModificacion,
+                            d.UsuarioModifico
+                        }).FirstOrDefault(),
+                    datosMedicos = _baseDatos.DatosMedicos
+                        .Where(dm => dm.IdDatosmedicos == u.IdUsuario)
+                        .Select(dm => new {
+                            dm.IdDatosmedicos,
+                            dm.AntecedentesMedicos,
+                            dm.Alergias,
+                            dm.TipoSanguineo,
+                            dm.NombreMedicofamiliar,
+                            dm.TelefonoMedicofamiliar,
+                            dm.Observaciones,
+                            dm.FechaRegistro,
+                            dm.UsuarioRegistro,
+                            dm.FechaModificacion,
+                            dm.UsuarioModifico
+                        }).ToList(),
+                    padecimientos = _baseDatos.Padecimientos
+                        .Where(p => p.DatosmedicosId == u.IdUsuario)
+                        .Select(p => new {
+                            p.IdPadecimiento,
+                            p.DatosmedicosId,
+                            p.Nombre,
+                            p.Descripcion,
+                            p.PadeceDesde,
+                            p.FechaRegistro,
+                            p.UsuarioRegistro,
+                            p.FechaModificacion,
+                            p.UsuarioModifico
+                        }).ToList()
+                })
+                .ToListAsync<dynamic>();
+
+            var jsonResult = JsonSerializer.Serialize(cuidadores);
+            return Ok(jsonResult);
+        }
+
+        // api igual que la de arriba
         [HttpGet("mostrarDatosCuidadoresWeb")]
         public async Task<IActionResult> mostrarCuidadores()
         {
@@ -520,62 +650,74 @@ namespace Cuidador.Controllers
                         fecha_modificacion = us.FechaModificacion
                     };
                     var personas = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.UsuarioId == us.IdUsuario);
-                    var personaOut = new OUTPersonaFisicaWebDTO
+                    var personaOut = new OUTPersonaFisicaWebDTO();
+                    if (personas != null)
                     {
-                        id_persona = personas.IdPersona,
-                        usuario_id = personas.UsuarioId,
-                        nombre = personas.Nombre,
-                        apellido_paterno = personas.ApellidoPaterno,
-                        apellido_materno = personas.ApellidoMaterno,
-                        correo_electronico = personas.CorreoElectronico,
-                        fecha_nacimiento = personas.FechaNacimiento,
-                        genero = personas.Genero,
-                        estado_Civil = personas.EstadoCivil,
-                        rfc = personas.Rfc,
-                        curp = personas.Curp,
-                        telefono_particular = personas.TelefonoParticular,
-                        telefono_movil = personas.TelefonoParticular,
-                        telefono_emergencia = personas.TelefonoEmergencia,
-                        nombrecompleto_familiar = personas.NombrecompletoFamiliar,
-                        domicilio_id = personas.DomicilioId,
-                        datos_medicosid = personas.DatosMedicosid,
-                        avatar_image = personas.AvatarImage,
-                        estatus_id = personas.EstatusId,
-                        fecha_registro = personas.FechaRegistro,
-                        usuario_registro = personas.UsuarioRegistro,
-                        fecha_modificacion = personas.FechaModificacion,
-                        usuario_modifico = personas.UsuarioModifico
-                    };
+                        personaOut = new OUTPersonaFisicaWebDTO
+                        {
+                            id_persona = personas.IdPersona,
+                            usuario_id = personas.UsuarioId,
+                            nombre = personas.Nombre,
+                            apellido_paterno = personas.ApellidoPaterno,
+                            apellido_materno = personas.ApellidoMaterno,
+                            correo_electronico = personas.CorreoElectronico,
+                            fecha_nacimiento = personas.FechaNacimiento,
+                            genero = personas.Genero,
+                            estado_Civil = personas.EstadoCivil,
+                            rfc = personas.Rfc,
+                            curp = personas.Curp,
+                            telefono_particular = personas.TelefonoParticular,
+                            telefono_movil = personas.TelefonoParticular,
+                            telefono_emergencia = personas.TelefonoEmergencia,
+                            nombrecompleto_familiar = personas.NombrecompletoFamiliar,
+                            domicilio_id = personas.DomicilioId,
+                            datos_medicosid = personas.DatosMedicosid,
+                            avatar_image = personas.AvatarImage,
+                            estatus_id = personas.EstatusId,
+                            fecha_registro = personas.FechaRegistro,
+                            usuario_registro = personas.UsuarioRegistro,
+                            fecha_modificacion = personas.FechaModificacion,
+                            usuario_modifico = personas.UsuarioModifico
+                        };
+                    }
                     var domicilioModel = personas != null ? await _baseDatos.Domicilios.SingleOrDefaultAsync(d => d.IdDomicilio == personas.DomicilioId): null;
-                    var domicilioOut = new OUTDomicilioDTO
+                    var domicilioOut = new OUTDomicilioDTO();
+                    if (domicilioModel != null)
                     {
-                        id_domicilio = domicilioModel.IdDomicilio,
-                        calle = domicilioModel.Calle,
-                        colonia = domicilioModel.Colonia,
-                        numero_interior = domicilioModel.NumeroInterior,
-                        numero_exterior = domicilioModel.NumeroExterior,
-                        ciudad = domicilioModel.Ciudad,
-                        estado = domicilioModel.Estado,
-                        pais = domicilioModel.Pais,
-                        referencias = domicilioModel.Referencias,
-                        estatus_id = domicilioModel.EstatusId,
-                        fecha_registro = domicilioModel?.FechaRegistro,
-                        usuario_registro = domicilioModel.UsuarioRegistro,
-                        fecha_modificacion = domicilioModel.FechaModificacion
-                    };
+                        domicilioOut = new OUTDomicilioDTO
+                        {
+                            id_domicilio = domicilioModel.IdDomicilio,
+                            calle = domicilioModel.Calle,
+                            colonia = domicilioModel.Colonia,
+                            numero_interior = domicilioModel.NumeroInterior,
+                            numero_exterior = domicilioModel.NumeroExterior,
+                            ciudad = domicilioModel.Ciudad,
+                            estado = domicilioModel.Estado,
+                            pais = domicilioModel.Pais,
+                            referencias = domicilioModel.Referencias,
+                            estatus_id = domicilioModel.EstatusId,
+                            fecha_registro = domicilioModel?.FechaRegistro,
+                            usuario_registro = domicilioModel.UsuarioRegistro,
+                            fecha_modificacion = domicilioModel.FechaModificacion
+                        };
+                    }
 
                     var datosMedicosModel = personas != null ? await _baseDatos.DatosMedicos.SingleOrDefaultAsync(dm => dm.IdDatosmedicos == personas.DatosMedicosid): null;
-                    var datosMedicosOut = new OUTDatosMedicosDTO
+                    var datosMedicosOut = new OUTDatosMedicosDTO();
+                    if (datosMedicosModel != null)
                     {
-                        id_datosmedicos = datosMedicosModel.IdDatosmedicos,
-                        antecedentes_medicos = datosMedicosModel.AntecedentesMedicos,
-                        alergias = datosMedicosModel.Alergias,
-                        tipo_sanguineo = datosMedicosModel.TipoSanguineo,
-                        nombre_medicofamiliar = datosMedicosModel.NombreMedicofamiliar,
-                        telefono_medicofamiliar = datosMedicosModel.TelefonoMedicofamiliar,
-                        observaciones = datosMedicosModel?.Observaciones,
-                        fecha_registro = datosMedicosModel.FechaRegistro
-                    };
+                        datosMedicosOut = new OUTDatosMedicosDTO
+                        {
+                            id_datosmedicos = datosMedicosModel.IdDatosmedicos,
+                            antecedentes_medicos = datosMedicosModel.AntecedentesMedicos,
+                            alergias = datosMedicosModel.Alergias,
+                            tipo_sanguineo = datosMedicosModel.TipoSanguineo,
+                            nombre_medicofamiliar = datosMedicosModel.NombreMedicofamiliar,
+                            telefono_medicofamiliar = datosMedicosModel.TelefonoMedicofamiliar,
+                            observaciones = datosMedicosModel?.Observaciones,
+                            fecha_registro = datosMedicosModel.FechaRegistro
+                        };
+                    }
                     var padecimientos = datosMedicosModel != null ? await _baseDatos.Padecimientos.Where(p => p.DatosmedicosId == datosMedicosModel.IdDatosmedicos).ToListAsync(): null;
                     var listaPadecimientosOut = new List<OUTPadecimientosDTO>();
                     if(padecimientos != null)
@@ -848,8 +990,9 @@ namespace Cuidador.Controllers
                 {
                     // Si ocurre un error, se revierte toda la transacción
                     await transaction.RollbackAsync();
-
-                    return BadRequest(ex.Message);
+                    var innerException = ex.InnerException;
+                    return BadRequest(new { error = ex.Message, innerError = innerException?.Message }
+);
                 }
             }
         }
