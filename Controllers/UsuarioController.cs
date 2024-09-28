@@ -58,7 +58,7 @@ namespace Cuidador.Controllers
                         .Contains(Menu.IdMenu)
                         select Menu).ToListAsync();
 
-                    var modelOut = new OutLogin
+                    var modelOutLogin = new OutLogin
                     {
                         IdUsuario = usuario.IdUsuario,
                         UsuarionivelId = usuario.UsuarionivelId,
@@ -69,7 +69,7 @@ namespace Cuidador.Controllers
                         PersonaFisicas = persona,
                         Menu = menus
                     };
-                    return Ok(modelOut);
+                    return Ok(modelOutLogin);
                 }
                 catch(Exception ex)
                 {
@@ -122,7 +122,7 @@ namespace Cuidador.Controllers
                 var documentacion = persona != null ? await _baseDatos.Documentacions.Where(d => d.PersonaId == persona.IdPersona).ToListAsync() : new List<Documentacion>();
                 var cer = persona != null ? await _baseDatos.CertificacionesExperiencia.Where(c => c.PersonaId == persona.IdPersona).ToListAsync() : new List<CertificacionesExperiencium>();
 
-                var modelOut = new OutLoginCuidador
+                var modelOutLoginCuidador = new OutLoginCuidador
                 {
                     domicilio = domicilio,
                     datosMedico = datosMedicos,
@@ -133,7 +133,7 @@ namespace Cuidador.Controllers
                     certificaciones = cer
                 };
 
-                return Ok(modelOut);
+                return Ok(modelOutLoginCuidador);
                 
             }
             // tipo cliente
@@ -169,7 +169,7 @@ namespace Cuidador.Controllers
                 // datos de persona que necesita de familiar
                 var personaAdulto = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario).ToArrayAsync();
 
-                var listaAdulto = new List<AdultoDTO>();
+                var listaAdultoDto = new List<AdultoDTO>();
 
                 foreach (var adlt in personaAdulto)
                 {
@@ -183,7 +183,7 @@ namespace Cuidador.Controllers
 
                     var cert = adlt != null ? await _baseDatos.CertificacionesExperiencia.Where(c => c.PersonaId == adlt.IdPersona).ToListAsync() : new List<CertificacionesExperiencium>();
 
-                    var adulto = new AdultoDTO
+                    var modelAdultoDto = new AdultoDTO
                     {
                         domicilio = dom,
                         DatosMedico = dataMedico,
@@ -192,7 +192,7 @@ namespace Cuidador.Controllers
                         documentacion = document
                     };
 
-                    listaAdulto.Add(adulto);
+                    listaAdultoDto.Add(modelAdultoDto);
                 }
 
                 var modelOut = new OutLoginCliente
@@ -203,7 +203,7 @@ namespace Cuidador.Controllers
                     usuario = usuario,
                     personaFisica = persona,
                     documentacion = documentacion,
-                    adulto = listaAdulto
+                    adulto = listaAdultoDto
                 };
 
                 return Ok(modelOut);
@@ -222,8 +222,8 @@ namespace Cuidador.Controllers
         [HttpGet("verCliente/{idCliente}")]
         public async Task<IActionResult> verCliente(int idCliente)
         {
-            var us = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.IdUsuario == idCliente && u.TipoUsuarioid == 2);
-            if (us == null)
+            var usuario = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.IdUsuario == idCliente && u.TipoUsuarioid == 2);
+            if (usuario == null)
             {
                 var res = new
                 {
@@ -232,14 +232,14 @@ namespace Cuidador.Controllers
                 return BadRequest(res);
             }
 
-            var pers = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == idCliente).ToListAsync();
-            var tipUsuario = await _baseDatos.TipoUsuarios.SingleOrDefaultAsync(t => t.IdTipousuario == us.TipoUsuarioid);
-            var nivelUsuario = await _baseDatos.NivelUsuarios.SingleOrDefaultAsync(n => n.IdNivelusuario == us.UsuarionivelId);
+            var persona = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == idCliente).ToListAsync();
+            var tipUsuario = await _baseDatos.TipoUsuarios.SingleOrDefaultAsync(t => t.IdTipousuario == usuario.TipoUsuarioid);
+            var nivelUsuario = await _baseDatos.NivelUsuarios.SingleOrDefaultAsync(n => n.IdNivelusuario == usuario.UsuarionivelId);
             var listPersona = new List<PersonaFisica>();
-            foreach (var p in pers)
+            foreach (var p in persona)
             {
                 var padecimientos = await _baseDatos.Padecimientos.Where(ped => ped.DatosmedicosId == p.DatosMedicosid).ToListAsync();
-                var datosMedicos = new DatosMedico
+                var modelDatosMedicos = new DatosMedico
                 {
                     Padecimientos = padecimientos,
                 };
@@ -255,18 +255,18 @@ namespace Cuidador.Controllers
                     EstadoCivil = p.EstadoCivil,
                     Domicilio = p.Domicilio,
                     AvatarImage = p.AvatarImage,
-                    DatosMedicos = datosMedicos
+                    DatosMedicos = modelDatosMedicos
                 };
 
                 listPersona.Add(person);
             }
 
-            var salario = await _baseDatos.SalarioCuidadors.SingleOrDefaultAsync(s => s.Usuarioid == us.IdUsuario);
+            var salario = await _baseDatos.SalarioCuidadors.SingleOrDefaultAsync(s => s.Usuarioid == usuario.IdUsuario);
             
             var outModel = new OUTVerCliente
             {
-                idUsuario = us.IdUsuario,
-                usuario = us.Usuario1,
+                idUsuario = usuario.IdUsuario,
+                usuario = usuario.Usuario1,
                 nivel_usuario = nivelUsuario.NombreNivel,
                 tipo_usuario = tipUsuario.NombreTipo,
                 personaFisica = listPersona
@@ -280,8 +280,8 @@ namespace Cuidador.Controllers
         [Route("verUsuarioWeb/{idPersona}")]
         public async Task<IActionResult> verUsuario(int idPersona)
         {
-            var pers = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == idPersona).ToListAsync();
-            if (pers == null)
+            var persona = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == idPersona).ToListAsync();
+            if (persona == null)
             {
                 var res = new
                 {
@@ -296,7 +296,7 @@ namespace Cuidador.Controllers
             var us = new Usuario();
             var nivelUsuario = new NivelUsuario();
             var tipUsuario = new TipoUsuario();
-            foreach (var p in pers)
+            foreach (var p in persona)
             {
                 us = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.IdUsuario == p.UsuarioId && u.TipoUsuarioid == 1);
                 if (us == null)
@@ -316,30 +316,31 @@ namespace Cuidador.Controllers
 
             var salario = await _baseDatos.SalarioCuidadors.SingleOrDefaultAsync(s => s.Usuarioid == us.IdUsuario);
 
-            var outModel = new OUTVerUsuario();
+            var modelOutVerUsuario = new OUTVerUsuario();
+
             if (salario == null)
             {
                 salario = null;
             }
             else
             {
-                outModel = new OUTVerUsuario
+                modelOutVerUsuario = new OUTVerUsuario
                 {
                     id_usuario = us.IdUsuario,
                     usuario = us.Usuario1,
                     nivelUsuario = nivelUsuario.NombreNivel,
                     tipo_usuario = tipUsuario.NombreTipo,
-                    personaFisica = pers,
+                    personaFisica = persona,
                     comentarios_usuario = listaComen,
                     domicilio = listaDomicilio,
                     salario_cuidador = salario.PrecioPorHora,
                     cuidados_realizados = contratosRealizados.Count()
                 };
 
-                return Ok(outModel);
+                return Ok(modelOutVerUsuario);
             }
 
-            outModel = new OUTVerUsuario
+            modelOutVerUsuario = new OUTVerUsuario
             {
                 id_usuario = us.IdUsuario,
                 usuario = us.Usuario1,
@@ -350,7 +351,7 @@ namespace Cuidador.Controllers
                 domicilio = listaDomicilio
             };
 
-            return Ok(outModel);            
+            return Ok(modelOutVerUsuario);            
         }
 
         [HttpGet]

@@ -4542,19 +4542,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\vhmed\\.nuget\\packages\\": {}
+    "C:\\Users\\daian\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Cuidador.csproj",
+      "projectUniqueName": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Cuidador.csproj",
       "projectName": "Cuidador",
-      "projectPath": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Cuidador.csproj",
-      "packagesPath": "C:\\Users\\vhmed\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\obj\\",
+      "projectPath": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Cuidador.csproj",
+      "packagesPath": "C:\\Users\\daian\\.nuget\\packages\\",
+      "outputPath": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\vhmed\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\daian\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -4624,7 +4624,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.302/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
