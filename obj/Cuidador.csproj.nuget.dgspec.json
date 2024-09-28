@@ -1,28 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Cuidador.csproj": {}
+    "/Users/kevinramos7/Documents/ProyectosUTL/CuidadorServices/APIWeb_CuidadorAspNet/Cuidador.csproj": {}
   },
   "projects": {
-    "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Cuidador.csproj": {
+    "/Users/kevinramos7/Documents/ProyectosUTL/CuidadorServices/APIWeb_CuidadorAspNet/Cuidador.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Cuidador.csproj",
+        "projectUniqueName": "/Users/kevinramos7/Documents/ProyectosUTL/CuidadorServices/APIWeb_CuidadorAspNet/Cuidador.csproj",
         "projectName": "Cuidador",
-        "projectPath": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Cuidador.csproj",
-        "packagesPath": "C:\\Users\\daian\\.nuget\\packages\\",
-        "outputPath": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\obj\\",
+        "projectPath": "/Users/kevinramos7/Documents/ProyectosUTL/CuidadorServices/APIWeb_CuidadorAspNet/Cuidador.csproj",
+        "packagesPath": "/Users/kevinramos7/.nuget/packages/",
+        "outputPath": "/Users/kevinramos7/Documents/ProyectosUTL/CuidadorServices/APIWeb_CuidadorAspNet/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\daian\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/kevinramos7/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -84,7 +81,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.303/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
