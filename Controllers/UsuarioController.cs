@@ -219,6 +219,99 @@ namespace Cuidador.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("loginWebOptimizado")]
+        public async Task<IActionResult> LoginWebOptimizado([FromBody] UsuarioLoginDTO user)
+        {
+            var usuario = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.Usuario1 == user.Usuario);
+
+            if (usuario == null)
+            {
+                var res = new { error = "No se encontró el usuario" };
+                return BadRequest(res);
+            }
+
+            // tipo cuidador
+            if (usuario.Contrasenia == user.Contrasenia && usuario.TipoUsuarioid == 1)
+            {
+                var persona = await _baseDatos.PersonaFisicas
+                    .Include(p => p.Domicilio)
+                    .Include(p => p.DatosMedicos)
+                    .ThenInclude(dm => dm.Padecimientos)
+                    .Include(p => p.Documentacions)
+                    .Include(p => p.CertificacionesExperiencia)
+                    .SingleOrDefaultAsync(p => p.UsuarioId == usuario.IdUsuario);
+
+                if (persona == null)
+                {
+                    return BadRequest(new { error = "No se encontró la persona física del cuidador" });
+                }
+
+                var modelOut = new OutLoginCuidador
+                {
+                    domicilio = persona.Domicilio,
+                    datosMedico = persona.DatosMedicos,
+                    padecimientos = persona.DatosMedicos?.Padecimientos.ToList() ?? new List<Padecimiento>(),
+                    usuario = usuario,
+                    personaFisica = persona,
+                    documentaciones = persona.Documentacions.ToList(),
+                    certificaciones = persona.CertificacionesExperiencia.ToList()
+                };
+
+                return Ok(modelOut);
+            }
+
+            // tipo cliente
+            if (usuario.Contrasenia == user.Contrasenia && usuario.TipoUsuarioid == 2)
+            {
+                var personaFamiliar = await _baseDatos.PersonaFisicas
+                    .Include(p => p.Domicilio)
+                    .Include(p => p.DatosMedicos)
+                    .ThenInclude(dm => dm.Padecimientos)
+                    .Include(p => p.Documentacions)
+                    .Include(p => p.CertificacionesExperiencia)
+                    .SingleOrDefaultAsync(p => p.UsuarioId == usuario.IdUsuario && p.EsFamiliar == 1);
+
+                if (personaFamiliar == null)
+                {
+                    return BadRequest(new { error = "No se encuentra el usuario del familiar" });
+                }
+
+                // Datos de personas que necesitan cuidado
+                var personasAdulto = await _baseDatos.PersonaFisicas
+                    .Where(p => p.UsuarioId == usuario.IdUsuario)
+                    .Include(p => p.Domicilio)
+                    .Include(p => p.DatosMedicos)
+                    .ThenInclude(dm => dm.Padecimientos)
+                    .Include(p => p.Documentacions)
+                    .ToListAsync();
+
+                var listaAdulto = personasAdulto.Select(adlt => new AdultoDTO
+                {
+                    domicilio = adlt.Domicilio,
+                    DatosMedico = adlt.DatosMedicos,
+                    Padecimiento = adlt.DatosMedicos?.Padecimientos.ToList() ?? new List<Padecimiento>(),
+                    PersonaFisica = adlt,
+                    documentacion = adlt.Documentacions.ToList()
+                }).ToList();
+
+                var modelOut = new OutLoginCliente
+                {
+                    domicilio = personaFamiliar.Domicilio,
+                    datosMedico = personaFamiliar.DatosMedicos,
+                    padecimiento = personaFamiliar.DatosMedicos?.Padecimientos.ToList() ?? new List<Padecimiento>(),
+                    usuario = usuario,
+                    personaFisica = personaFamiliar,
+                    documentacion = personaFamiliar.Documentacions.ToList(),
+                    adulto = listaAdulto
+                };
+
+                return Ok(modelOut);
+            }
+
+            return Ok(new { admin = "usuario admin" });
+        }
+
         [HttpGet("verCliente/{idCliente}")]
         public async Task<IActionResult> verCliente(int idCliente)
         {
