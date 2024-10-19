@@ -76,100 +76,19 @@ namespace Cuidador.Controllers
         {
             try
             {
-                var contrato = await _baseDatos.Contratos.SingleOrDefaultAsync(c => c.IdContrato.Equals(idContrato));
-                if (contrato == null)
-                {
-                    return NotFound("Contrato no encontrado.");
-                }
-
-                var list_persona_cuidador = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == contrato.PersonaidCuidador).ToListAsync();
-
-                var outListCuidador = new List<PersonaFisica>();
-
-                foreach (var persona_cuidador in list_persona_cuidador)
-                {
-                    var domicilio = await _baseDatos.Domicilios.SingleOrDefaultAsync(d => d.IdDomicilio == persona_cuidador.DomicilioId);
-                    var certificacionesExp = await _baseDatos.CertificacionesExperiencia.Where(cp => cp.PersonaId == persona_cuidador.IdPersona).ToListAsync();
-                    var comentariosUs = await _baseDatos.ComentariosUsuarios.Where(cm => cm.PersonaReceptorid == persona_cuidador.IdPersona).ToListAsync();
-
-                    var outPersona = new PersonaFisica
-                    {
-                        IdPersona = persona_cuidador.IdPersona,
-                        Nombre = persona_cuidador.Nombre,
-                        ApellidoPaterno = persona_cuidador.ApellidoPaterno,
-                        ApellidoMaterno = persona_cuidador.ApellidoMaterno,
-                        CorreoElectronico = persona_cuidador.CorreoElectronico,
-                        FechaNacimiento = persona_cuidador.FechaNacimiento,
-                        Genero = persona_cuidador.Genero,
-                        EstadoCivil = persona_cuidador.EstadoCivil,
-                        Domicilio = domicilio,
-                        AvatarImage = persona_cuidador.AvatarImage,
-                        CertificacionesExperiencia = certificacionesExp,
-                        ComentariosUsuarioPersonaReceptors = comentariosUs
-                    };
-
-                    outListCuidador.Add(outPersona);
-                }
-
-                var lista_contratositem = await _baseDatos.ContratoItems.Where(c => c.ContratoId == contrato.IdContrato).ToListAsync();
-
-                var outContratoitm = new List<ContratoItem>();
-                foreach (var contratoitm in lista_contratositem)
-                {
-                    var tareas = await _baseDatos.TareasContratos.Where(t => t.ContratoitemId == contratoitm.ContratoId).ToListAsync();
-                    var estatus = await _baseDatos.Estatuses.SingleOrDefaultAsync(e => e.IdEstatus == contratoitm.EstatusId);
-                    var conitm = new ContratoItem
-                    {
-                        IdContratoitem = contratoitm.IdContratoitem,
-                        Estatus = estatus,
-                        Observaciones = contratoitm.Observaciones,
-                        HorarioInicioPropuesto = contratoitm.HorarioInicioPropuesto,
-                        HorarioFinPropuesto = contratoitm.HorarioFinPropuesto,
-                        FechaAceptacion = contratoitm.FechaAceptacion,
-                        FechaInicioCuidado = contratoitm.FechaInicioCuidado,
-                        FechaFinCuidado = contratoitm.FechaFinCuidado,
-                        ImporteTotal = contratoitm.ImporteTotal,
-                        TareasContratos = tareas != null ? tareas : null
-                    };
-
-                    outContratoitm.Add(conitm);
-                }
-
-                var cont = new OUTContratoDetalle
-                {
-                    id_contrato = contrato.IdContrato,
-                    persona_cuidador = outListCuidador,
-                    contrato_item = outContratoitm
-                };
-
-                return Ok(cont);
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (ex) here using your logging framework of choice
-                return StatusCode(500, $"Ocurrió un error al procesar la solicitud: {ex.Message}");
-            }
-
-        }
-
-
-        [HttpGet("detalleVistaClienteOptimizado/{idContrato}")]
-        public async Task<IActionResult> DetalleVistaClienteOptimizado(int idContrato)
-        {
-            try
-            {
-                
+                // Obtener el contrato
                 var contrato = await _baseDatos.Contratos.SingleOrDefaultAsync(c => c.IdContrato == idContrato);
                 if (contrato == null)
                 {
                     return NotFound("Contrato no encontrado.");
                 }
 
-
+                // Obtener la información del cuidador
                 var listPersonaCuidador = await _baseDatos.PersonaFisicas
                     .Where(p => p.IdPersona == contrato.PersonaidCuidador)
                     .ToListAsync();
 
+                // Obtener en un solo lote domicilios, certificaciones y comentarios de los cuidadores
                 var cuidadorIds = listPersonaCuidador.Select(p => p.IdPersona).ToList();
                 var domicilios = await _baseDatos.Domicilios
                     .Where(d => listPersonaCuidador.Select(p => p.DomicilioId).Contains(d.IdDomicilio))
@@ -204,6 +123,7 @@ namespace Cuidador.Controllers
                         .ToList()
                 }).ToList();
 
+                // Obtener todos los items de contrato y las tareas relacionadas
                 var contratoItems = await _baseDatos.ContratoItems
                     .Where(c => c.ContratoId == contrato.IdContrato)
                     .ToListAsync();
@@ -235,7 +155,7 @@ namespace Cuidador.Controllers
                         .ToList()
                 }).ToList();
 
-                // mapear la salida final
+                // Preparar la salida final
                 var cont = new OUTContratoDetalle
                 {
                     id_contrato = contrato.IdContrato,
@@ -258,63 +178,6 @@ namespace Cuidador.Controllers
         [Route("listarContrato/{idUsuario}/{tipousuarioid}")]
         public async Task<IActionResult> ListarContrato(int idUsuario, int tipousuarioid)
         {
-
-            var personaUsuario = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == idUsuario).ToListAsync();
-            var contratos = new List<Contrato>();
-
-            if (tipousuarioid == 1) // 1 =  cuidador | 2 = cliente
-            {
-                foreach (var listpersona in personaUsuario)
-                {
-                    var contrato = await _baseDatos.Contratos.Where(c => c.PersonaidCuidador == listpersona.IdPersona).ToListAsync();
-                    contratos.AddRange(contrato);
-                }
-            }
-            else 
-            {
-                foreach (var listpersona in personaUsuario)
-                {
-                    var contrato = await _baseDatos.Contratos.Where(c => c.PersonaidCliente == listpersona.IdPersona).ToListAsync();
-                    contratos.AddRange(contrato);
-                }
-            }
-
-            var outListaContrato = new List<OUTListarContrato>();
-
-            foreach (var listasContrato in contratos)
-            {
-                var persona_cuidador = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.IdPersona == listasContrato.PersonaidCuidador);
-                var persona_cliente = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.IdPersona == listasContrato.PersonaidCliente);
-
-
-                var contratoitem = await _baseDatos.ContratoItems.Where(c => c.ContratoId == listasContrato.IdContrato).ToListAsync();
-
-                foreach (var i in contratoitem)
-                {
-                    var estatus = await _baseDatos.Estatuses.SingleOrDefaultAsync(e => e.IdEstatus == i.EstatusId);
-                    var obj = new OUTListarContrato
-                    {
-                        id_contrato = listasContrato.IdContrato,
-                        horario_inicio = i.HorarioInicioPropuesto ?? DateTime.MinValue,
-                        horario_fin = i.HorarioFinPropuesto ?? DateTime.MinValue,
-                        estatus = estatus,
-                        persona_cuidador = persona_cuidador,
-                        persona_cliente = persona_cliente,
-                        importe_cuidado = i.ImporteTotal ?? 0,
-                        numero_de_tareas = await _baseDatos.TareasContratos.Where(t => t.ContratoitemId == i.IdContratoitem).CountAsync()
-                    };
-                    outListaContrato.Add(obj);
-                }
-
-            }
-
-            return Ok(outListaContrato);
-        }
-
-        [HttpGet]
-        [Route("ListarContratoOptimizado/{idUsuario}/{tipousuarioid}")]
-        public async Task<IActionResult> ListarContratoOptimizado(int idUsuario, int tipousuarioid)
-        {
             var personaUsuario = await _baseDatos.PersonaFisicas
                 .Where(p => p.UsuarioId == idUsuario)
                 .ToListAsync();
@@ -328,7 +191,7 @@ namespace Cuidador.Controllers
                     .Where(c => personaIds.Contains(c.PersonaidCuidador))
                     .ToListAsync();
             }
-            else
+            else 
             {
                 contratos = await _baseDatos.Contratos
                     .Where(c => personaIds.Contains(c.PersonaidCliente))

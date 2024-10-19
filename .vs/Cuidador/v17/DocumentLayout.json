@@ -1,14 +1,43 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\",
+  "WorkspaceRootPath": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\",
   "Documents": [
     {
+<<<<<<< HEAD
       "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\controllers\\contratoitemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\contratoitemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|c:\\users\\vhmed\\onedrive\\documentos\\9no_cuatri\\proyecto-3erparcial\\cuidador\\controllers\\usuariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\usuariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+=======
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|d:\\cuidador\\backcuidador\\apiweb_cuidadoraspnet\\cuidador.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:cuidador.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|d:\\cuidador\\backcuidador\\apiweb_cuidadoraspnet\\dto\\contract\\listarcontrato\\outchangeestatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:dto\\contract\\listarcontrato\\outchangeestatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|d:\\cuidador\\backcuidador\\apiweb_cuidadoraspnet\\controllers\\hubhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\hubhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|d:\\cuidador\\backcuidador\\apiweb_cuidadoraspnet\\controllers\\finanzascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\finanzascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|d:\\cuidador\\backcuidador\\apiweb_cuidadoraspnet\\controllers\\doocumentoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\doocumentoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|d:\\cuidador\\backcuidador\\apiweb_cuidadoraspnet\\controllers\\usuariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\usuariocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|d:\\cuidador\\backcuidador\\apiweb_cuidadoraspnet\\controllers\\contratoitemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B0BDF48A-45D9-42A3-8F98-78FF4409DBFA}|Cuidador.csproj|solutionrelative:controllers\\contratoitemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+>>>>>>> 0db9f53c1210588349cb186f1f1e6e7de6bf51be
     }
   ],
   "DocumentGroupContainers": [
@@ -18,18 +47,104 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
+<<<<<<< HEAD
           "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 1,
+=======
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DoocumentosController.cs",
+              "DocumentMoniker": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Controllers\\DoocumentosController.cs",
+              "RelativeDocumentMoniker": "Controllers\\DoocumentosController.cs",
+              "ToolTip": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Controllers\\DoocumentosController.cs",
+              "RelativeToolTip": "Controllers\\DoocumentosController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-16T01:26:29.69Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "FinanzasController.cs",
+              "DocumentMoniker": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Controllers\\FinanzasController.cs",
+              "RelativeDocumentMoniker": "Controllers\\FinanzasController.cs",
+              "ToolTip": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Controllers\\FinanzasController.cs",
+              "RelativeToolTip": "Controllers\\FinanzasController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-16T01:25:38.942Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "HubHelper.cs",
+              "DocumentMoniker": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Controllers\\HubHelper.cs",
+              "RelativeDocumentMoniker": "Controllers\\HubHelper.cs",
+              "ToolTip": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Controllers\\HubHelper.cs",
+              "RelativeToolTip": "Controllers\\HubHelper.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-16T01:25:32.884Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "OUTChangeEstatus.cs",
+              "DocumentMoniker": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Dto\\Contract\\ListarContrato\\OUTChangeEstatus.cs",
+              "RelativeDocumentMoniker": "Dto\\Contract\\ListarContrato\\OUTChangeEstatus.cs",
+              "ToolTip": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Dto\\Contract\\ListarContrato\\OUTChangeEstatus.cs",
+              "RelativeToolTip": "Dto\\Contract\\ListarContrato\\OUTChangeEstatus.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-16T00:32:18.332Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Cuidador.csproj",
+              "DocumentMoniker": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Cuidador.csproj",
+              "RelativeDocumentMoniker": "Cuidador.csproj",
+              "ToolTip": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Cuidador.csproj",
+              "RelativeToolTip": "Cuidador.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-08-16T00:28:22.223Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ContratoItemController.cs",
+              "DocumentMoniker": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Controllers\\ContratoItemController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ContratoItemController.cs",
+              "ToolTip": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Controllers\\ContratoItemController.cs",
+              "RelativeToolTip": "Controllers\\ContratoItemController.cs",
+              "ViewState": "AQIAAOoAAAAAAAAAAAAowAIBAAA9AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-08-16T00:28:41.12Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+>>>>>>> 0db9f53c1210588349cb186f1f1e6e7de6bf51be
               "Title": "UsuarioController.cs",
-              "DocumentMoniker": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Controllers\\UsuarioController.cs",
+              "DocumentMoniker": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Controllers\\UsuarioController.cs",
               "RelativeDocumentMoniker": "Controllers\\UsuarioController.cs",
-              "ToolTip": "C:\\Users\\vhmed\\OneDrive\\Documentos\\9no_cuatri\\Proyecto-3erParcial\\Cuidador\\Controllers\\UsuarioController.cs",
+              "ToolTip": "D:\\Cuidador\\backCuidador\\APIWeb_CuidadorAspNet\\Controllers\\UsuarioController.cs",
               "RelativeToolTip": "Controllers\\UsuarioController.cs",
               "ViewState": "AQIAAAEAAAAAAAAAAAAiwNkAAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+<<<<<<< HEAD
               "WhenOpened": "2024-10-18T20:16:43.88Z",
               "EditorCaption": ""
             },
@@ -45,6 +160,9 @@
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-16T19:50:20.345Z",
               "EditorCaption": ""
+=======
+              "WhenOpened": "2024-08-12T19:53:14.301Z"
+>>>>>>> 0db9f53c1210588349cb186f1f1e6e7de6bf51be
             }
           ]
         }
