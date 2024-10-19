@@ -11,7 +11,7 @@ var connectionString = builder.Configuration.GetConnectionString(remota);
 
 // AGERGAMOS LA CONFIGURACION SQL
 builder.Services.AddDbContext<DbAaaabeCuidadorContext>(options => options.UseSqlServer(connectionString));
-
+builder.Services.AddSignalR();
 // DEFINIMOS LA NUEVA POLITICA DE LOS CORS
 builder.Services.AddCors(options =>
 {
@@ -27,7 +27,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+app.UseRouting();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

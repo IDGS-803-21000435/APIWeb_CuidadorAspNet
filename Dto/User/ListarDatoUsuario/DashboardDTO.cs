@@ -4,8 +4,8 @@ namespace Cuidador.Dto.User.ListarDatoUsuario
 {
     public class DashboardDTO
     {
-        public fechasConContratos fechasConContratos { get; set; }
-        public horasPorMes horasPorMes { get; set; }
+        public List<fechasConContratos> fechasConContratos { get; set; }
+        public List<horasPorMes> horasPorMes { get; set; }
         public ContratoItem contratoEnCurso { get; set; }
     }
 

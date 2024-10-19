@@ -9,6 +9,7 @@ using Cuidador.Dto.User.RegistrarUsuario;
 using Cuidador.Dto.User.RegistrarFamiliar;
 using Cuidador.Dto.User.ListarCuidador;
 using System.Text.Json;
+using Cuidador.Dto.Documentos;
 
 namespace Cuidador.Controllers
 {
@@ -90,7 +91,7 @@ namespace Cuidador.Controllers
 
         [HttpPost]
         [Route("loginWeb")]
-        public async Task<IActionResult> LoginCuidador([FromBody] UsuarioLoginDTO user)
+        public async Task<IActionResult> LoginWeb([FromBody] UsuarioLoginDTO user)
         {
             var usuario = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.Usuario1 == user.Usuario);
 
@@ -210,14 +211,12 @@ namespace Cuidador.Controllers
             }
             else
             {
-                var res = new
-                {
-                    error = "Por favor intente de nuevo, si persiste contacte soporte"
-                };
+                
 
-                return BadRequest(res);
+                return Ok(new {admin = "usuario admin"});
             }
         }
+
 
         [HttpGet("verCliente/{idCliente}")]
         public async Task<IActionResult> verCliente(int idCliente)
@@ -306,9 +305,9 @@ namespace Cuidador.Controllers
                 tipUsuario = await _baseDatos.TipoUsuarios.SingleOrDefaultAsync(t => t.IdTipousuario == us.TipoUsuarioid);
                 nivelUsuario = await _baseDatos.NivelUsuarios.SingleOrDefaultAsync(n => n.IdNivelusuario == us.UsuarionivelId);
                 var certificaciones = await _baseDatos.CertificacionesExperiencia.Where(c => c.PersonaId == p.IdPersona).ToListAsync();
-                var comen = await _baseDatos.ComentariosUsuarios.SingleOrDefaultAsync(c => c.PersonaReceptor.IdPersona == p.IdPersona);
+                var comen = await _baseDatos.ComentariosUsuarios.Where(c => c.PersonaReceptor.IdPersona == p.IdPersona).ToListAsync();
                 var domicilio = await _baseDatos.Domicilios.SingleOrDefaultAsync(d => d.IdDomicilio == p.DomicilioId);
-                listaComen.Add(comen);
+                listaComen.AddRange(comen);
                 listaDomicilio.Add(domicilio);
                 var contratos = await _baseDatos.Contratos.Where(c => c.PersonaidCuidador == p.IdPersona && c.EstatusId == 9).ToListAsync();
                 contratosRealizados.AddRange(contratos);
@@ -419,6 +418,24 @@ namespace Cuidador.Controllers
                         personas = null;
                     }
                     var comentarios = personas != null ? await _baseDatos.ComentariosUsuarios.Where(c => c.PersonaReceptorid == personas.First().IdPersona).ToListAsync(): null;
+                    var listaComentarios = new List<ComentariosUsuario>();
+                    if (comentarios != null)
+                    {
+                        foreach (var item in comentarios)
+                        {
+                            var coment = new ComentariosUsuario
+                            {
+                                IdComentarios = item.IdComentarios,
+                                PersonaReceptorid = item.PersonaReceptorid,
+                                PersonaEmisorid = item.PersonaEmisorid,
+                                Calificacion = item.Calificacion,
+                                Comentario = item.Comentario
+                            };
+
+                            listaComentarios.Add(coment);
+                        }
+                    }
+
                     var cer = personas != null ? await _baseDatos.CertificacionesExperiencia.Where(c => c.PersonaId == personas.First().IdPersona).ToListAsync() : null;
                     var certificacionesExperiencia = new List<CertificacionesExperiencium>();
                     
@@ -475,7 +492,7 @@ namespace Cuidador.Controllers
                             idUsuario = us.IdUsuario,
                             usuario = us.Usuario1,
                             nivelUsuario = nivelUsuario.NombreNivel,
-                            comentariosUsuario = comentarios,//lista comentarios
+                            comentariosUsuario = listaComentarios,//lista comentarios
                             certificaciones = certificacionesExperiencia, //lista certificaciones
                             personaFisica = listaPersonas, //lista personasfisicas
                             cuidadosrealizados = contratosRealizados.Count(), //cuidados realizados
@@ -500,7 +517,7 @@ namespace Cuidador.Controllers
                     }                   
                 }
 
-                return Ok(outLista.ToList());
+                return Ok(outLista);
             }
             catch (Exception ex)
             {
@@ -963,7 +980,8 @@ namespace Cuidador.Controllers
                         EstatusId = usuarioDTO.persona.EstatusId,
                         FechaRegistro = DateTime.Now, // Se coloca en el controlador
                         UsuarioRegistro = usuarioDTO.domicilio.UsuarioRegistro, /*PUEDE TENER DETALLE*/
-                        UsuarioId = usuario.IdUsuario
+                        UsuarioId = usuario.IdUsuario,
+                        EsFamiliar = 1
                     };
 
                     _baseDatos.PersonaFisicas.Add(persona);
@@ -991,6 +1009,28 @@ namespace Cuidador.Controllers
                     }
 
                     _baseDatos.Documentacions.AddRange(documentaciones);
+                    await _baseDatos.SaveChangesAsync();
+
+                    var cuenta_bancaria = new CuentaBancarium
+                    {
+                        UsuarioId = usuario.IdUsuario,
+                        NumeroCuenta = 000000000,
+                        ClabeInterbancaria = 111111111,
+                        Nombrebanco = "BBVA",
+                        FechaRegistro = DateTime.Now
+                    };
+
+                    _baseDatos.CuentaBancaria.Add(cuenta_bancaria);
+                    await _baseDatos.SaveChangesAsync();
+
+                    var saldo = new Saldo
+                    {
+                        UsuarioId = usuario.IdUsuario,
+                        SaldoActual = 400,
+                        Estatusid = 10,
+                        FechaRegistro = DateTime.Now
+                    };
+                    _baseDatos.Saldos.Add(saldo);
                     await _baseDatos.SaveChangesAsync();
 
                     // Si todas las operaciones son exitosas, se confirman los cambios
@@ -1043,7 +1083,7 @@ namespace Cuidador.Controllers
                     .FirstOrDefaultAsync();
 
 
-                dashboard.horasPorMes = resultado ?? new horasPorMes();
+                dashboard.horasPorMes = resultado != null ? new List<horasPorMes> { resultado } : new List<horasPorMes>();
 
                 dashboard.contratoEnCurso = contratoItems.FirstOrDefault(ci => ci.EstatusId == 19) ?? new ContratoItem();
 
@@ -1233,6 +1273,38 @@ namespace Cuidador.Controllers
 
                     }
 
+                    var cuenta_bancaria = new CuentaBancarium
+                    {
+                        UsuarioId = usuario.IdUsuario,
+                        NumeroCuenta = 000000000,
+                        ClabeInterbancaria = 111111111,
+                        Nombrebanco = "BBVA",
+                        FechaRegistro = DateTime.Now
+                    };
+
+                    _baseDatos.CuentaBancaria.Add(cuenta_bancaria);
+
+                    var saldo = new Saldo
+                    {
+                        UsuarioId = usuario.IdUsuario,
+                        SaldoActual = 400,
+                        Estatusid = 10,
+                        FechaRegistro = DateTime.Now
+                    };
+                    _baseDatos.Saldos.Add(saldo);
+
+                    Random random = new Random();
+                    int numeroAleatorio = random.Next(100, 400);
+
+                    var salario = new SalarioCuidador
+                    {
+                        Usuarioid = usuario.IdUsuario,
+                        PrecioPorHora = numeroAleatorio,
+                        FechaRegistro = DateTime.Now
+                    };
+
+                    _baseDatos.SalarioCuidadors.Add(salario);
+                    await _baseDatos.SaveChangesAsync();
                     // Si todas las operaciones son exitosas, se confirman los cambios
                     await transaction.CommitAsync();
 
@@ -1245,6 +1317,39 @@ namespace Cuidador.Controllers
 
                     return BadRequest(ex.Message);
                 }
+            }
+        }
+
+        [HttpPut("updateUsuario")]
+        public async Task<IActionResult> ModificarUsuario([FromBody] OUTUsuarioDTO us)
+        {
+            if (us == null)
+            {
+                return BadRequest(new { error = "objeto de envio vacio" });
+            }
+            var usuarioExistente = await _baseDatos.Usuarios.FindAsync(us.id_usuario);
+            if (usuarioExistente == null)
+            {
+                return BadRequest(new { error = $"No se encontró el usuaraio con ID {us.id_usuario}." });
+            }
+
+            usuarioExistente.IdUsuario = us.id_usuario;
+            usuarioExistente.UsuarionivelId = us.usuarionivel_id;
+            usuarioExistente.TipoUsuarioid = us.tipo_usuarioid;
+            usuarioExistente.Estatusid = us.estatusid;
+            usuarioExistente.Usuario1 = us.usuario;
+            usuarioExistente.Contrasenia = us.contrasenia;
+            usuarioExistente.FechaModificacion = DateTime.Now;
+            usuarioExistente.UsuarioModifico = us.usuario_modifico;
+
+            try
+            {
+                await _baseDatos.SaveChangesAsync();
+                return Ok(new { success = "informacion actualizada" });
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al actualizar el usuario: {ex.Message}");
             }
         }
     }

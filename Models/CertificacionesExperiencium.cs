@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace Cuidador.Models;
 
 public partial class CertificacionesExperiencium
-{
+{ 
     public int IdCertificacion { get; set; }
 
     public string TipoCertificacion { get; set; } = null!;

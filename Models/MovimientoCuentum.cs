@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -24,7 +25,7 @@ public partial class MovimientoCuentum
     public decimal SaldoActual { get; set; }
 
     public decimal SaldoAnterior { get; set; }
-
+    [JsonIgnore]
     public virtual CuentaBancarium Cuentabancaria { get; set; } = null!;
 
     public virtual MetodoPago MetodoPago { get; set; } = null!;
