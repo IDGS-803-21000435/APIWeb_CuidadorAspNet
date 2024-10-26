@@ -6,7 +6,7 @@ namespace Cuidador.Dto.Finanzas
     {
         public decimal saldoActual { get; set; }
         public List<MetodoPagoUsuario> metodoPagoUsuario { get; set; }
-        public List<TransaccionesSaldo> transacciones { get; set; }
+        public List<TransaccionesSaldo> transaccionSaldo { get; set; }
 
     }
 }

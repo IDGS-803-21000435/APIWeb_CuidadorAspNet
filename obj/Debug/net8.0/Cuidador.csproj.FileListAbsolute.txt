@@ -142,3 +142,4 @@ C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\D
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Debug\net8.0\Microsoft.Extensions.Logging.dll
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Debug\net8.0\package-lock.json

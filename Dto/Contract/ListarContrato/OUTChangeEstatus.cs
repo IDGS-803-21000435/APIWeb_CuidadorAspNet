@@ -2,7 +2,7 @@
 {
     public class OUTChangeEstatus
     {
-        public int id_contrato_item { get; set; }
-        public int id_estatus { get; set; }
+        public int idContratoItem { get; set; }
+        public int idEstatus { get; set; }
     }
 }

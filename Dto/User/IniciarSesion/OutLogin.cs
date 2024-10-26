@@ -16,8 +16,8 @@ namespace Cuidador.Dto.User.IniciarSesion
         public string Usuario1 { get; set; } = null!;
 
         public string Contrasenia { get; set; } = null!;
-
-        public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
+        public virtual SalarioCuidador SalarioCuidador { get; set; }
+        public virtual ICollection<PersonaFisica> PersonaFisica { get; set; } = new List<PersonaFisica>();
 
         public virtual ICollection<Menu> Menu { get; set; } = new List<Menu>();
     }

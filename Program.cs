@@ -7,7 +7,7 @@ var local = "cadenaSQLLocal";
 var remota = "cadenaSQLRemota";
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString(remota);
+var connectionString = builder.Configuration.GetConnectionString(local);
 
 // AGERGAMOS LA CONFIGURACION SQL
 builder.Services.AddDbContext<DbAaaabeCuidadorContext>(options => options.UseSqlServer(connectionString));

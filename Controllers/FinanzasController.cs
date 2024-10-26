@@ -51,7 +51,7 @@ namespace Cuidador.Controllers
             {
                 detalleSaldoDTO.saldoActual = await _context.Saldos.Where(s => s.UsuarioId == idUsuario).Select(s => s.SaldoActual).FirstOrDefaultAsync();
                 detalleSaldoDTO.metodoPagoUsuario = await _context.MetodoPagoUsuarios.Where(m => m.UsuarioId == idUsuario).ToListAsync() ?? new List<MetodoPagoUsuario>();
-                detalleSaldoDTO.transacciones = await _context.Saldos
+                detalleSaldoDTO.transaccionSaldo = await _context.Saldos
                     .Join(_context.TransaccionesSaldos, c => c.IdSaldo, m => m.SaldoId, (c, m) => new { c, m })
                     .Where(cm => cm.c.UsuarioId == idUsuario)
                     .Select(cm => cm.m).ToListAsync() ?? new List<TransaccionesSaldo>();

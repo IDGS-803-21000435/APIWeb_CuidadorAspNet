@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Cuidador")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+24bcad3a4ef6ef95bd1db2dc3a76bd39bccad8d3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dcdd4e30ca6956e87e724b341225f96bdcf019af")]
 [assembly: System.Reflection.AssemblyProductAttribute("Cuidador")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Cuidador")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

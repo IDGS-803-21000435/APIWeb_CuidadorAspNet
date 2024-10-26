@@ -4,15 +4,15 @@ namespace Cuidador.Dto.Contract.ListarContrato
 {
     public class OUTListarContrato
     {
-        public int id_contrato { get; set; }
-        public PersonaFisica persona_cuidador { get; set; }
-        public PersonaFisica persona_cliente { get; set; }
+        public int idContrato { get; set; }
+        public PersonaFisica personaCuidador { get; set; }
+        public PersonaFisica personaCliente { get; set; }
         public Estatus estatus { get; set; }
-        public int numeroContratos { get; set; }
-        public int numero_de_tareas { get; set; }
-        public decimal importe_cuidado { get; set; }
-        public DateTime horario_inicio { get; set; }
-        public DateTime horario_fin { get; set; }   
+        public int numeroContrato { get; set; }
+        public int numeroTarea { get; set; }
+        public decimal importeCuidado { get; set; }
+        public DateTime horarioInicio { get; set; }
+        public DateTime horarioFin { get; set; }   
 
     }
 }

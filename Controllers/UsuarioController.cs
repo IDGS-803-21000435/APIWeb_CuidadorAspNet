@@ -59,6 +59,8 @@ namespace Cuidador.Controllers
                         .Contains(Menu.IdMenu)
                         select Menu).ToListAsync();
 
+                    //var salario = await _baseDatos.SalarioCuidadors.Where(s => s.Usuarioid == persona.se)
+
                     var modelOutLogin = new OutLogin
                     {
                         IdUsuario = usuario.IdUsuario,
@@ -67,7 +69,7 @@ namespace Cuidador.Controllers
                         Estatusid = usuario.Estatusid,
                         Usuario1 = usuario.Usuario1,
                         Contrasenia = usuario.Contrasenia,
-                        PersonaFisicas = persona,
+                        PersonaFisica = persona,
                         Menu = menus
                     };
                     return Ok(modelOutLogin);
@@ -75,9 +77,7 @@ namespace Cuidador.Controllers
                 catch(Exception ex)
                 {
                     return BadRequest(ex);
-                }
-
-                
+                }                
             }
             else
             {
@@ -585,10 +585,10 @@ namespace Cuidador.Controllers
                             idUsuario = us.IdUsuario,
                             usuario = us.Usuario1,
                             nivelUsuario = nivelUsuario.NombreNivel,
-                            comentariosUsuario = listaComentarios,//lista comentarios
+                            comentariosUsuarioPersonaReceptor = listaComentarios,//lista comentarios
                             certificaciones = certificacionesExperiencia, //lista certificaciones
                             personaFisica = listaPersonas, //lista personasfisicas
-                            cuidadosrealizados = contratosRealizados.Count(), //cuidados realizados
+                            cuidadoRealizado = contratosRealizados.Count(), //cuidados realizados
                             salarioCuidador = 0, //salarios
                         };
                         outLista.Add(datosOut);
@@ -600,10 +600,10 @@ namespace Cuidador.Controllers
                             idUsuario = us.IdUsuario,
                             usuario = us.Usuario1,
                             nivelUsuario = nivelUsuario.NombreNivel,
-                            comentariosUsuario = comentarios,//lista comentarios
+                            comentariosUsuarioPersonaReceptor = comentarios,//lista comentarios
                             certificaciones = certificacionesExperiencia, //lista certificaciones
                             personaFisica = listaPersonas, //lista personasfisicas
-                            cuidadosrealizados = contratosRealizados.Count(), //cuidados realizados
+                            cuidadoRealizado = contratosRealizados.Count(), //cuidados realizados
                             salarioCuidador = salario.PrecioPorHora, //salarios
                         };
                         outLista.Add(datosOut);

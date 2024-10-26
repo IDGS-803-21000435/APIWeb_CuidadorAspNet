@@ -48,7 +48,6 @@ C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\R
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\System.Runtime.Caching.dll
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\System.Security.Cryptography.ProtectedData.dll
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\System.Security.Permissions.dll
-C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\System.Text.Json.dll
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\System.Windows.Extensions.dll
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\cs\Microsoft.CodeAnalysis.resources.dll
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\de\Microsoft.CodeAnalysis.resources.dll
@@ -124,3 +123,11 @@ C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\obj\R
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\obj\Release\net8.0\linux-x64\Cuidador.genruntimeconfig.cache
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\obj\Release\net8.0\linux-x64\ref\Cuidador.dll
 C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\obj\Release\net8.0\linux-x64\Cuidador.sourcelink.json
+C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\package-lock.json
+C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\Dapper.dll
+C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\Microsoft.Extensions.Caching.Memory.dll
+C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\Microsoft.Extensions.Logging.dll
+C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\vhmed\OneDrive\Documentos\9no_cuatri\Proyecto-3erParcial\Cuidador\bin\Release\net8.0\linux-x64\Microsoft.Extensions.Options.dll

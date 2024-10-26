@@ -55,8 +55,8 @@ namespace Cuidador.Controllers
                         {
                             var aux = new OUTFechasOcupadasCuidador
                             {
-                                horario_inicio_propuesto = i.HorarioInicioPropuesto,
-                                horario_fin_propuesto = i.HorarioFinPropuesto
+                                horarioInicioPropuesto = i.HorarioInicioPropuesto,
+                                horarioFinPropuesto = i.HorarioFinPropuesto
                             };
 
                             listaFechas.Add(aux);
@@ -158,9 +158,9 @@ namespace Cuidador.Controllers
                 // Preparar la salida final
                 var cont = new OUTContratoDetalle
                 {
-                    id_contrato = contrato.IdContrato,
-                    persona_cuidador = outListCuidador,
-                    contrato_item = outContratoitm
+                    idContrato = contrato.IdContrato,
+                    personaCuidador = outListCuidador,
+                    contratoItem = outContratoitm
                 };
 
                 return Ok(cont);
@@ -241,14 +241,14 @@ namespace Cuidador.Controllers
 
                     var obj = new OUTListarContrato
                     {
-                        id_contrato = contrato.IdContrato,
-                        horario_inicio = i.HorarioInicioPropuesto ?? DateTime.MinValue,
-                        horario_fin = i.HorarioFinPropuesto ?? DateTime.MinValue,
+                        idContrato = contrato.IdContrato,
+                        horarioInicio = i.HorarioInicioPropuesto ?? DateTime.MinValue,
+                        horarioFin = i.HorarioFinPropuesto ?? DateTime.MinValue,
                         estatus = estatus,
-                        persona_cuidador = persona_cuidador,
-                        persona_cliente = persona_cliente,
-                        importe_cuidado = i.ImporteTotal ?? 0,
-                        numero_de_tareas = numero_de_tareas
+                        personaCuidador = persona_cuidador,
+                        personaCliente = persona_cliente,
+                        importeCuidado = i.ImporteTotal ?? 0,
+                        numeroTarea = numero_de_tareas
                     };
                     outListaContrato.Add(obj);
                 }
@@ -371,14 +371,14 @@ namespace Cuidador.Controllers
 
                         var obj = new OUTListarContrato
                         {
-                            id_contrato = contrato.IdContrato,
-                            horario_inicio = item.HorarioInicioPropuesto ?? DateTime.MinValue,
-                            horario_fin = item.HorarioFinPropuesto ?? DateTime.MinValue,
+                            idContrato = contrato.IdContrato,
+                            horarioInicio = item.HorarioInicioPropuesto ?? DateTime.MinValue,
+                            horarioFin = item.HorarioFinPropuesto ?? DateTime.MinValue,
                             estatus = estatus,
-                            persona_cuidador = contrato.PersonaidCuidadorNavigation,
-                            persona_cliente = contrato.PersonaidClienteNavigation,
-                            importe_cuidado = item.ImporteTotal ?? 0,
-                            numero_de_tareas = numeroDeTareas
+                            personaCuidador = contrato.PersonaidCuidadorNavigation,
+                            personaCliente = contrato.PersonaidClienteNavigation,
+                            importeCuidado = item.ImporteTotal ?? 0,
+                            numeroTarea = numeroDeTareas
                         };
 
                         outListaContrato.Add(obj);
@@ -406,8 +406,8 @@ namespace Cuidador.Controllers
                     // hay más campos para registrar
                     var contrato = new Contrato
                     {
-                        PersonaidCuidador = data.persona_cuidador_id,
-                        PersonaidCliente = data.persona_cliente_id,
+                        PersonaidCuidador = data.personaCuidadorId,
+                        PersonaidCliente = data.personaClienteId,
                         EstatusId = 18,
                         FechaRegistro = DateTime.Now,
                         FechaModifico = null
@@ -416,33 +416,33 @@ namespace Cuidador.Controllers
                     _baseDatos.Contratos.Add(contrato);
                     await _baseDatos.SaveChangesAsync();
 
-                    foreach (var contratoitemData in data.contrato_item)
+                    foreach (var contratoitemData in data.ContratoItem)
                     {
                         // Asegúrate de que 'diferencia' no sea nulo antes de intentar acceder a sus propiedades
-                        TimeSpan? diferencia = (contratoitemData.horario_fin_propuesto - contratoitemData.horario_inicio_propuesto);
+                        TimeSpan? diferencia = (contratoitemData.horarioFinPropuesto - contratoitemData.horarioInicioPropuesto);
 
                         if (diferencia.HasValue)
                         {
                             // Calcula los minutos sólo si 'diferencia' tiene un valor
                             decimal minutos = diferencia.Value.Days * 24 * 60 + diferencia.Value.Hours * 60 + diferencia.Value.Minutes;
-                            var persona_cuidador = await _baseDatos.PersonaFisicas.FirstOrDefaultAsync(p => p.IdPersona == data.persona_cuidador_id);
+                            var persona_cuidador = await _baseDatos.PersonaFisicas.FirstOrDefaultAsync(p => p.IdPersona == data.personaCuidadorId);
                             var salario_coidador = await _baseDatos.SalarioCuidadors.FirstOrDefaultAsync(s => s.Usuarioid == persona_cuidador.UsuarioId);
                             var contratoitem = new ContratoItem
                             {
                                 ContratoId = contrato.IdContrato, // id que se establecerá después de SaveChangesAsync
                                 EstatusId = 18,
-                                Observaciones = contratoitemData.observaciones,
-                                HorarioInicioPropuesto = contratoitemData.horario_inicio_propuesto,
-                                HorarioFinPropuesto = contratoitemData.horario_fin_propuesto,
+                                Observaciones = contratoitemData.observacion,
+                                HorarioInicioPropuesto = contratoitemData.horarioInicioPropuesto,
+                                HorarioFinPropuesto = contratoitemData.horarioFinPropuesto,
                                 ImporteTotal = Math.Round((decimal)(minutos * (salario_coidador.PrecioPorHora / 60)), 2)
                             };
 
                             _baseDatos.Add(contratoitem);
                             await _baseDatos.SaveChangesAsync();
 
-                            if (contratoitemData.tareas_contrato != null)
+                            if (contratoitemData.tareaContrato != null)
                             {
-                                foreach (var tareas_contratoData in contratoitemData.tareas_contrato)
+                                foreach (var tareas_contratoData in contratoitemData.tareaContrato)
                                 {
                                     var tareaContrato = new TareasContrato
                                     {
@@ -498,19 +498,19 @@ namespace Cuidador.Controllers
             {
                 try
                 {
-                    ContratoItem? item = await _baseDatos.ContratoItems.FindAsync(change.id_contrato_item);
+                    ContratoItem? item = await _baseDatos.ContratoItems.FindAsync(change.idContratoItem);
                     if (item == null) return BadRequest("Id de item no encontrado");
 
-                    item.EstatusId = change.id_estatus;
-                    if (change.id_estatus == 7)
+                    item.EstatusId = change.idEstatus;
+                    if (change.idEstatus == 7)
                     {
                         item.FechaInicioCuidado = DateTime.Now;
                     }
-                    else if (change.id_estatus == 8)
+                    else if (change.idEstatus == 8)
                     {
                         item.FechaFinCuidado = DateTime.Now;
                     }
-                    else if (change.id_estatus == 19)
+                    else if (change.idEstatus == 19)
                     {
                         item.FechaInicioCuidado = DateTime.Now;
                     }

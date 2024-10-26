@@ -28,10 +28,10 @@ namespace Cuidador.Controllers
 
             foreach (var documento in documentacions)
             {
-                var documentoExistente = await _baseDatos.Documentacions.FindAsync(documento.IdDocumentacion);
+                var documentoExistente = await _baseDatos.Documentacions.FindAsync(documento.IdDocumento);
                 if (documentoExistente == null)
                 {
-                    return BadRequest(new {error = $"No se encontró el documento con ID {documento.IdDocumentacion}." });
+                    return BadRequest(new {error = $"No se encontró el documento con ID {documento.IdDocumento}." });
                 }
 
                 documentoExistente.TipoDocumento = documento.TipoDocumento;

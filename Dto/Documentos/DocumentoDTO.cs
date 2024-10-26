@@ -2,7 +2,7 @@
 {
     public class DocumentoDTO
     {
-        public int IdDocumentacion { get; set; }
+        public int IdDocumento { get; set; }
 
         public int PersonaId { get; set; }
 
