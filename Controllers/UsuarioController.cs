@@ -29,64 +29,73 @@ namespace Cuidador.Controllers
         [Route("login")]
         public async Task<IActionResult> Log([FromBody] UsuarioLoginDTO user)
         {
-            var usuario = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.Usuario1 == user.Usuario);
-
-            if (usuario == null) {
-                var res = new
-                {
-                    error = "No se encontro el usuario"
-                };
-
-                return BadRequest(res);
-            }
-
-            if(usuario.Contrasenia == user.Contrasenia)
+            try
             {
-                try
+                var usuario = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.Usuario1 == user.Usuario);
+
+                if (usuario == null)
                 {
-                    var persona = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario && p.EsFamiliar == 0 && p.EstatusId == 10).ToArrayAsync();
-                    var menus = await (
-                        from Menu in _baseDatos.Menus
-                        where (
-                            from TipousuarioMenu in _baseDatos.TipousuarioMenus
-                            where (
-                                from Usuario in _baseDatos.Usuarios
-                                where Usuario.Usuario1 == user.Usuario
-                                select Usuario.TipoUsuarioid
-                                )
-                            .Contains(TipousuarioMenu.TipousuarioId)
-                            select TipousuarioMenu.MenuId)
-                        .Contains(Menu.IdMenu)
-                        select Menu).ToListAsync();
-
-                    //var salario = await _baseDatos.SalarioCuidadors.Where(s => s.Usuarioid == persona.se)
-
-                    var modelOutLogin = new OutLogin
+                    var res = new
                     {
-                        IdUsuario = usuario.IdUsuario,
-                        UsuarionivelId = usuario.UsuarionivelId,
-                        TipoUsuarioid = usuario.TipoUsuarioid,
-                        Estatusid = usuario.Estatusid,
-                        Usuario1 = usuario.Usuario1,
-                        Contrasenia = usuario.Contrasenia,
-                        PersonaFisica = persona,
-                        Menu = menus
+                        error = "No se encontro el usuario"
                     };
-                    return Ok(modelOutLogin);
+
+                    return BadRequest(res);
                 }
-                catch(Exception ex)
+
+                if (usuario.Contrasenia == user.Contrasenia)
                 {
-                    return BadRequest(ex);
-                }                
+                    try
+                    {
+                        var persona = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario && p.EsFamiliar == 0 && p.EstatusId == 10).ToArrayAsync();
+                        var menus = await (
+                            from Menu in _baseDatos.Menus
+                            where (
+                                from TipousuarioMenu in _baseDatos.TipousuarioMenus
+                                where (
+                                    from Usuario in _baseDatos.Usuarios
+                                    where Usuario.Usuario1 == user.Usuario
+                                    select Usuario.TipoUsuarioid
+                                    )
+                                .Contains(TipousuarioMenu.TipousuarioId)
+                                select TipousuarioMenu.MenuId)
+                            .Contains(Menu.IdMenu)
+                            select Menu).ToListAsync();
+
+                        //var salario = await _baseDatos.SalarioCuidadors.Where(s => s.Usuarioid == persona.se)
+
+                        var modelOutLogin = new OutLogin
+                        {
+                            IdUsuario = usuario.IdUsuario,
+                            UsuarionivelId = usuario.UsuarionivelId,
+                            TipoUsuarioid = usuario.TipoUsuarioid,
+                            Estatusid = usuario.Estatusid,
+                            Usuario1 = usuario.Usuario1,
+                            Contrasenia = usuario.Contrasenia,
+                            PersonaFisica = persona,
+                            Menu = menus
+                        };
+                        return Ok(modelOutLogin);
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(ex);
+                    }
+                }
+                else
+                {
+                    var res = new
+                    {
+                        error = "Contraseña no valida"
+                    };
+                    return BadRequest(res);
+                }
             }
-            else
+            catch(Exception ex)
             {
-                var res = new
-                {
-                    error = "Contraseña no valida"
-                };
-                return BadRequest(res);
-            }            
+                return BadRequest(ex);
+            }
+                        
         }
 
         [HttpPost]
