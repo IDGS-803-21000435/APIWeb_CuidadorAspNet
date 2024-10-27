@@ -18,9 +18,9 @@ namespace Cuidador.Controllers
     public class UsuarioController : ControllerBase
     {
         // VARIABLE DE COTEXTO DE BD
-        private readonly DbAaaabeCuidadorContext _baseDatos;
+        private readonly DbAae280CuidadorContext _baseDatos;
 
-        public UsuarioController(DbAaaabeCuidadorContext baseDatos)
+        public UsuarioController(DbAae280CuidadorContext baseDatos)
         {
             this._baseDatos = baseDatos;
         }

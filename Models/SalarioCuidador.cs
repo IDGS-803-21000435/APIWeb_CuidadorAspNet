@@ -21,6 +21,14 @@ public partial class SalarioCuidador
     public int? UsuarioModifico { get; set; }
 
     public int? Concurrencia { get; set; }
+
+    public string? DiaSemana { get; set; }
+
+    public TimeOnly? HoraInicio { get; set; }
+
+    public TimeOnly? HoraFin { get; set; }
+
+    public byte Estatusid { get; set; }
     [JsonIgnore]
     public virtual Usuario Usuario { get; set; } = null!;
 }

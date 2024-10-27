@@ -1,3 +1,4 @@
+using Cuidador.Data;
 using Cuidador.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,10 +8,11 @@ var local = "cadenaSQLLocal";
 var remota = "cadenaSQLRemota";
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString(local);
+var connectionString = builder.Configuration.GetConnectionString(remota);
 
 // AGERGAMOS LA CONFIGURACION SQL
-builder.Services.AddDbContext<DbAaaabeCuidadorContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<DbAae280CuidadorContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddSingleton<DataContext>();
 builder.Services.AddSignalR();
 // DEFINIMOS LA NUEVA POLITICA DE LOS CORS
 builder.Services.AddCors(options =>

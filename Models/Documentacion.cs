@@ -35,6 +35,6 @@ public partial class Documentacion
     public virtual ICollection<CertificacionesExperiencium> CertificacionesExperiencia { get; set; } = new List<CertificacionesExperiencium>();
 
     public virtual Estatus Estatus { get; set; } = null!;
-    [JsonIgnore] 
+    [JsonIgnore]
     public virtual PersonaFisica Persona { get; set; } = null!;
 }

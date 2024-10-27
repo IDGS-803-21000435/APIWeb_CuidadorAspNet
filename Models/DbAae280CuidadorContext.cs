@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cuidador.Models;
 
-public partial class DbAaaabeCuidadorContext : DbContext
+public partial class DbAae280CuidadorContext : DbContext
 {
-    public DbAaaabeCuidadorContext()
+    public DbAae280CuidadorContext()
     {
     }
 
-    public DbAaaabeCuidadorContext(DbContextOptions<DbAaaabeCuidadorContext> options)
+    public DbAae280CuidadorContext(DbContextOptions<DbAae280CuidadorContext> options)
         : base(options)
     {
     }
@@ -38,6 +38,8 @@ public partial class DbAaaabeCuidadorContext : DbContext
     public virtual DbSet<Domicilio> Domicilios { get; set; }
 
     public virtual DbSet<Estatus> Estatuses { get; set; }
+
+    public virtual DbSet<Feedback> Feedbacks { get; set; }
 
     public virtual DbSet<Menu> Menus { get; set; }
 
@@ -78,7 +80,6 @@ public partial class DbAaaabeCuidadorContext : DbContext
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     public virtual DbSet<VersionesMovil> VersionesMovils { get; set; }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -559,6 +560,39 @@ public partial class DbAaaabeCuidadorContext : DbContext
                 .HasConstraintName("FK__estatus__tipoest__6B24EA82");
         });
 
+        modelBuilder.Entity<Feedback>(entity =>
+        {
+            entity.HasKey(e => e.IdFeedback).HasName("PK__feedback__36BC86300AC81674");
+
+            entity.ToTable("feedback");
+
+            entity.Property(e => e.IdFeedback).HasColumnName("id_feedback");
+            entity.Property(e => e.Categoria)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("categoria");
+            entity.Property(e => e.Cuerpo)
+                .HasMaxLength(1000)
+                .IsUnicode(false)
+                .HasColumnName("cuerpo");
+            entity.Property(e => e.Estatusid).HasColumnName("estatusid");
+            entity.Property(e => e.Fecha).HasColumnName("fecha");
+            entity.Property(e => e.FechaRegistro).HasColumnName("fecha_registro");
+            entity.Property(e => e.FechaResolucion).HasColumnName("fecha_resolucion");
+            entity.Property(e => e.UsuarioRegistro).HasColumnName("usuario_registro");
+            entity.Property(e => e.UsuarioidRemitente).HasColumnName("usuarioid_remitente");
+
+            entity.HasOne(d => d.Estatus).WithMany(p => p.Feedbacks)
+                .HasForeignKey(d => d.Estatusid)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__feedback__estatu__0D44F85C");
+
+            entity.HasOne(d => d.UsuarioidRemitenteNavigation).WithMany(p => p.Feedbacks)
+                .HasForeignKey(d => d.UsuarioidRemitente)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__feedback__usuari__0C50D423");
+        });
+
         modelBuilder.Entity<Menu>(entity =>
         {
             entity.HasKey(e => e.IdMenu).HasName("PK__menus__68A1D9DB4DF24053");
@@ -944,18 +978,27 @@ public partial class DbAaaabeCuidadorContext : DbContext
 
         modelBuilder.Entity<SalarioCuidador>(entity =>
         {
-            entity.HasKey(e => e.IdSueldonivel).HasName("PK__salario___813986A006713E78");
+            entity.HasKey(e => e.IdSueldonivel).HasName("PK__tmp_ms_x__813986A02999E20C");
 
             entity.ToTable("salario_cuidador");
 
             entity.Property(e => e.IdSueldonivel).HasColumnName("id_sueldonivel");
             entity.Property(e => e.Concurrencia).HasColumnName("concurrencia");
+            entity.Property(e => e.DiaSemana)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("dia_semana");
+            entity.Property(e => e.Estatusid)
+                .HasDefaultValue((byte)1)
+                .HasColumnName("estatusid");
             entity.Property(e => e.FechaModificacion)
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_modificacion");
             entity.Property(e => e.FechaRegistro)
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_registro");
+            entity.Property(e => e.HoraFin).HasColumnName("hora_fin");
+            entity.Property(e => e.HoraInicio).HasColumnName("hora_inicio");
             entity.Property(e => e.PrecioPorHora)
                 .HasColumnType("decimal(10, 4)")
                 .HasColumnName("precio_por_hora");
@@ -966,7 +1009,7 @@ public partial class DbAaaabeCuidadorContext : DbContext
             entity.HasOne(d => d.Usuario).WithMany(p => p.SalarioCuidadors)
                 .HasForeignKey(d => d.Usuarioid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__salario_c__usuar__03F0984C");
+                .HasConstraintName("FK__salario_c__usuar__09746778");
         });
 
         modelBuilder.Entity<Saldo>(entity =>

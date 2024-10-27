@@ -9,7 +9,7 @@ public partial class ComentariosUsuario
     public int IdComentarios { get; set; }
 
     public int PersonaReceptorid { get; set; }
-    
+
     public int PersonaEmisorid { get; set; }
 
     public short Calificacion { get; set; }

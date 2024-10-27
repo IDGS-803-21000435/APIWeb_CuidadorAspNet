@@ -11,9 +11,9 @@ namespace Cuidador.Controllers
     [ApiController]
     public class DoocumentosController : ControllerBase
     {
-        private readonly DbAaaabeCuidadorContext _baseDatos;
+        private readonly DbAae280CuidadorContext _baseDatos;
 
-        public DoocumentosController(DbAaaabeCuidadorContext baseDatos)
+        public DoocumentosController(DbAae280CuidadorContext baseDatos)
         {
             this._baseDatos = baseDatos;
         }

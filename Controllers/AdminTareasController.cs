@@ -11,10 +11,10 @@ namespace AdminTareasController.Hubs
     public class AdminTareasController : ControllerBase
     {
 
-        private readonly DbAaaabeCuidadorContext _baseDatos;
+        private readonly DbAae280CuidadorContext _baseDatos;
         private readonly IHubContext<HubHelper> _hubContext;
 
-        public AdminTareasController(DbAaaabeCuidadorContext baseDatos, IHubContext<HubHelper> hubContext)
+        public AdminTareasController(DbAae280CuidadorContext baseDatos, IHubContext<HubHelper> hubContext)
         {
             this._baseDatos = baseDatos;
             this._hubContext = hubContext;

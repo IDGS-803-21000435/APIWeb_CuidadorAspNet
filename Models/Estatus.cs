@@ -36,6 +36,8 @@ public partial class Estatus
 
     public virtual ICollection<Domicilio> Domicilios { get; set; } = new List<Domicilio>();
 
+    public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
     public virtual ICollection<Menu> Menus { get; set; } = new List<Menu>();
 
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();

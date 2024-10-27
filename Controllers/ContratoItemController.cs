@@ -10,6 +10,9 @@ using Cuidador.Dto.Contract.FechasCuidador;
 using System.Data;
 using Dapper;
 using System.Data.Common;
+using Microsoft.Data.SqlClient;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Cuidador.Data;
 
 namespace Cuidador.Controllers
 {
@@ -17,13 +20,13 @@ namespace Cuidador.Controllers
     [ApiController]
     public class ContratoItemController : ControllerBase
     {
-        private readonly DbAaaabeCuidadorContext _baseDatos;
-        private readonly IDbConnection _connection;
+        private readonly DbAae280CuidadorContext _baseDatos;
+        private readonly DataContext _connection;
 
-        public ContratoItemController(DbAaaabeCuidadorContext baseDatos)
+        public ContratoItemController(DbAae280CuidadorContext baseDatos, DataContext dataContext)
         {
             this._baseDatos = baseDatos;
-            this._connection = _baseDatos.Database.GetDbConnection();
+            this._connection = dataContext;
         }
 
         [HttpGet]
@@ -76,11 +79,25 @@ namespace Cuidador.Controllers
         {
             try
             {
+                DynamicParameters dynamicParameters = new DynamicParameters();
+                Contrato contrato = new Contrato();
                 // Obtener el contrato
-                var contrato = await _baseDatos.Contratos.SingleOrDefaultAsync(c => c.IdContrato == idContrato);
+                using (var connection = (_connection.createConnection()))
+                {
+                    dynamicParameters.Add("@idContratoParam", idContrato);
+                    var sql = @"
+                            SELECT 
+                                id_contrato AS IdContrato, 
+                                personaid_cuidador AS PersonaidCuidador 
+                            FROM contrato 
+                            WHERE id_contrato = @idContratoParam"
+                    ;
+
+                    contrato = await connection.QueryFirstOrDefaultAsync<Contrato>(sql, dynamicParameters);
+                }
                 if (contrato == null)
                 {
-                    return NotFound("Contrato no encontrado.");
+                    return BadRequest("Contrato no encontrado.");
                 }
 
                 // Obtener la información del cuidador
@@ -248,7 +265,8 @@ namespace Cuidador.Controllers
                         personaCuidador = persona_cuidador,
                         personaCliente = persona_cliente,
                         importeCuidado = i.ImporteTotal ?? 0,
-                        numeroTarea = numero_de_tareas
+                        numeroTarea = numero_de_tareas,
+                        idContratoItem = i.IdContratoitem
                     };
                     outListaContrato.Add(obj);
                 }
@@ -258,137 +276,137 @@ namespace Cuidador.Controllers
         }
 
 
-        [HttpGet]
-        [Route("listarContratoDapper/{idUsuario}")]
-        public async Task<IActionResult> listarContratoDapper(int idUsuario)
-        {
-            var sql = @"
+        //[HttpGet]
+        //[Route("listarContratoDapper/{idUsuario}")]
+        //public async Task<IActionResult> listarContratoDapper(int idUsuario)
+        //{
+        //    var sql = @"
 
-                SELECT
-                    id_persona              AS IdPersona
-		            ,nombre                 AS Nombre
-		            ,apellido_paterno       AS ApellidoPaterno
-                    ,apellido_materno       AS ApellidoMaterno
-                    ,correo_electronico     AS CorreoElectronico
-                    ,fecha_nacimiento       AS FechaNacimiento
-                    ,genero                 AS Genero
-                    ,estado_civil           AS EstadoCivil
-                    ,rfc                    AS RFC
-                    ,curp                   AS Curp
-                    ,telefono_particular    AS TelefonoParticular
-                    ,telefono_movil         AS TelefonoMovil
-                    ,telefono_emergencia    AS TelefonoEmergencia
-                    ,nombrecompleto_familiar AS NombrecompletoFamiliar
-                    ,domicilio_id           AS DomicilioId
-                    ,datos_medicosid        AS DatosMedicosid
-                    ,fecha_registro         AS FechaRegistro
-                    ,usuario_registro       AS UsuarioRegistro
-                    ,fecha_modificacion     AS FechaModificacion
-                    ,usuario_modifico       AS UsuarioModifico
-                    ,usuario_id             AS UsuarioId
-                    ,avatar_image           AS AvatarImage
-                    ,estatus_id             AS EstatusId
-                    ,esFamiliar             AS EsFamiliar
-                FROM persona_fisica WHERE usuario_id = @IdUsuario;
+        //        SELECT
+        //            id_persona              AS IdPersona
+		      //      ,nombre                 AS Nombre
+		      //      ,apellido_paterno       AS ApellidoPaterno
+        //            ,apellido_materno       AS ApellidoMaterno
+        //            ,correo_electronico     AS CorreoElectronico
+        //            ,fecha_nacimiento       AS FechaNacimiento
+        //            ,genero                 AS Genero
+        //            ,estado_civil           AS EstadoCivil
+        //            ,rfc                    AS RFC
+        //            ,curp                   AS Curp
+        //            ,telefono_particular    AS TelefonoParticular
+        //            ,telefono_movil         AS TelefonoMovil
+        //            ,telefono_emergencia    AS TelefonoEmergencia
+        //            ,nombrecompleto_familiar AS NombrecompletoFamiliar
+        //            ,domicilio_id           AS DomicilioId
+        //            ,datos_medicosid        AS DatosMedicosid
+        //            ,fecha_registro         AS FechaRegistro
+        //            ,usuario_registro       AS UsuarioRegistro
+        //            ,fecha_modificacion     AS FechaModificacion
+        //            ,usuario_modifico       AS UsuarioModifico
+        //            ,usuario_id             AS UsuarioId
+        //            ,avatar_image           AS AvatarImage
+        //            ,estatus_id             AS EstatusId
+        //            ,esFamiliar             AS EsFamiliar
+        //        FROM persona_fisica WHERE usuario_id = @IdUsuario;
             
-                SELECT 
-                    c.id_contrato			AS IdContrato
-                    ,c.personaid_cuidador	AS PersonaidCuidador
-                    ,c.personaid_cliente	AS PersonaidCliente
-                    ,c.estatus_id			AS EstatusId
-                    ,c.usuario_registro	    AS UsuarioRegistro
-                    ,c.fecha_registro		AS FechaRegistro
-                    ,c.usuario_modifico	    AS UsuarioModifico
-                    ,c.fecha_modifico		AS FechaModifico
-                FROM contrato c
-                LEFT JOIN persona_fisica p ON 
-                    (c.personaid_cuidador = p.id_persona)
-                    OR (c.personaid_cliente = p.id_persona)
-                WHERE p.usuario_id = @IdUsuario;
+        //        SELECT 
+        //            c.id_contrato			AS IdContrato
+        //            ,c.personaid_cuidador	AS PersonaidCuidador
+        //            ,c.personaid_cliente	AS PersonaidCliente
+        //            ,c.estatus_id			AS EstatusId
+        //            ,c.usuario_registro	    AS UsuarioRegistro
+        //            ,c.fecha_registro		AS FechaRegistro
+        //            ,c.usuario_modifico	    AS UsuarioModifico
+        //            ,c.fecha_modifico		AS FechaModifico
+        //        FROM contrato c
+        //        LEFT JOIN persona_fisica p ON 
+        //            (c.personaid_cuidador = p.id_persona)
+        //            OR (c.personaid_cliente = p.id_persona)
+        //        WHERE p.usuario_id = @IdUsuario;
 
-            ";
+        //    ";
 
-            using (var multi = await _connection.QueryMultipleAsync(sql, new
-            {
-                IdUsuario = idUsuario
-            }))
-            {
-                // Cargar todas las personas relacionadas al usuario
-                var personaUsuario = (await multi.ReadAsync<PersonaFisica>()).ToList();
+        //    using (var multi = await _connection.QueryMultipleAsync(sql, new
+        //    {
+        //        IdUsuario = idUsuario
+        //    }))
+        //    {
+        //        // Cargar todas las personas relacionadas al usuario
+        //        var personaUsuario = (await multi.ReadAsync<PersonaFisica>()).ToList();
 
-                if (!personaUsuario.Any())
-                {
-                    return NotFound(new { error = "No se encontraron personas asociadas al usuario" });
-                }
+        //        if (!personaUsuario.Any())
+        //        {
+        //            return NotFound(new { error = "No se encontraron personas asociadas al usuario" });
+        //        }
 
-                // Obtener la segunda consulta
-                var contratos = (await multi.ReadAsync<Contrato>()).ToList();
+        //        // Obtener la segunda consulta
+        //        var contratos = (await multi.ReadAsync<Contrato>()).ToList();
 
-                if (!contratos.Any())
-                {
-                    return NotFound(new { error = "No se encontraron contratos" });
-                }
+        //        if (!contratos.Any())
+        //        {
+        //            return NotFound(new { error = "No se encontraron contratos" });
+        //        }
 
-                // Obtener los IDs de los contratos para las consultas siguientes
-                var contratoIds = contratos.Select(c => c.IdContrato).ToList();
+        //        // Obtener los IDs de los contratos para las consultas siguientes
+        //        var contratoIds = contratos.Select(c => c.IdContrato).ToList();
 
-                // Obtener los items de los contratos
-                var contratoItems = await _connection.QueryAsync<ContratoItem>(
-                    @"
-                        SELECT  *
-                        FROM contrato_item 
-                        WHERE contrato_id IN @ContratoIds
-                    ",
-                    new { ContratoIds = contratoIds });
+        //        // Obtener los items de los contratos
+        //        var contratoItems = await _connection.QueryAsync<ContratoItem>(
+        //            @"
+        //                SELECT  *
+        //                FROM contrato_item 
+        //                WHERE contrato_id IN @ContratoIds
+        //            ",
+        //            new { ContratoIds = contratoIds });
 
-                // Obtener los estatus relacionados con los contrato items usando los IDs de contrato obtenidos
-                var estatusIds = contratoItems.Select(ci => ci.EstatusId).Distinct().ToList();
-                var estatuses = await _connection.QueryAsync<Estatus>(
-                    @"
-                        SELECT * FROM estatus WHERE id_estatus IN @EstatusIds;
-                    ",
-                    new { EstatusIds = estatusIds });
+        //        // Obtener los estatus relacionados con los contrato items usando los IDs de contrato obtenidos
+        //        var estatusIds = contratoItems.Select(ci => ci.EstatusId).Distinct().ToList();
+        //        var estatuses = await _connection.QueryAsync<Estatus>(
+        //            @"
+        //                SELECT * FROM estatus WHERE id_estatus IN @EstatusIds;
+        //            ",
+        //            new { EstatusIds = estatusIds });
 
-                // Obtener las tareas relacionadas con los contrato items
-                var contratoItemIds = contratoItems.Select(ci => ci.IdContratoitem).ToList();
-                var tareasContratos = await _connection.QueryAsync<TareasContrato>(
-                    @"
-                        SELECT * FROM tareas_contrato WHERE contratoitem_id IN @ContratoItemIds
-                    ",
-                    new { ContratoItemIds = contratoItemIds });
+        //        // Obtener las tareas relacionadas con los contrato items
+        //        var contratoItemIds = contratoItems.Select(ci => ci.IdContratoitem).ToList();
+        //        var tareasContratos = await _connection.QueryAsync<TareasContrato>(
+        //            @"
+        //                SELECT * FROM tareas_contrato WHERE contratoitem_id IN @ContratoItemIds
+        //            ",
+        //            new { ContratoItemIds = contratoItemIds });
 
-                // Armar la lista final de salida
-                var outListaContrato = new List<OUTListarContrato>();
+        //        // Armar la lista final de salida
+        //        var outListaContrato = new List<OUTListarContrato>();
 
-                foreach (var contrato in contratos)
-                {
-                    var items = contratoItems.Where(ci => ci.ContratoId == contrato.IdContrato).ToList();
-                    Console.WriteLine("--------------------------" + contrato.IdContrato);
-                    foreach (var item in items)
-                    {
-                        var estatus = estatuses.SingleOrDefault(e => e.IdEstatus == item.EstatusId);
-                        var numeroDeTareas = tareasContratos.Count(t => t.ContratoitemId == item.IdContratoitem);
+        //        foreach (var contrato in contratos)
+        //        {
+        //            var items = contratoItems.Where(ci => ci.ContratoId == contrato.IdContrato).ToList();
+        //            Console.WriteLine("--------------------------" + contrato.IdContrato);
+        //            foreach (var item in items)
+        //            {
+        //                var estatus = estatuses.SingleOrDefault(e => e.IdEstatus == item.EstatusId);
+        //                var numeroDeTareas = tareasContratos.Count(t => t.ContratoitemId == item.IdContratoitem);
 
-                        var obj = new OUTListarContrato
-                        {
-                            idContrato = contrato.IdContrato,
-                            horarioInicio = item.HorarioInicioPropuesto ?? DateTime.MinValue,
-                            horarioFin = item.HorarioFinPropuesto ?? DateTime.MinValue,
-                            estatus = estatus,
-                            personaCuidador = contrato.PersonaidCuidadorNavigation,
-                            personaCliente = contrato.PersonaidClienteNavigation,
-                            importeCuidado = item.ImporteTotal ?? 0,
-                            numeroTarea = numeroDeTareas
-                        };
+        //                var obj = new OUTListarContrato
+        //                {
+        //                    idContrato = contrato.IdContrato,
+        //                    horarioInicio = item.HorarioInicioPropuesto ?? DateTime.MinValue,
+        //                    horarioFin = item.HorarioFinPropuesto ?? DateTime.MinValue,
+        //                    estatus = estatus,
+        //                    personaCuidador = contrato.PersonaidCuidadorNavigation,
+        //                    personaCliente = contrato.PersonaidClienteNavigation,
+        //                    importeCuidado = item.ImporteTotal ?? 0,
+        //                    numeroTarea = numeroDeTareas
+        //                };
 
-                        outListaContrato.Add(obj);
-                    }
-                }
+        //                outListaContrato.Add(obj);
+        //            }
+        //        }
                 
 
-                return Ok(outListaContrato);
-            }
-        }
+        //        return Ok(outListaContrato);
+        //    }
+        //}
 
         [HttpPost]
         [Route("guardarContrato")]
@@ -447,11 +465,11 @@ namespace Cuidador.Controllers
                                     var tareaContrato = new TareasContrato
                                     {
                                         ContratoitemId = contratoitem.IdContratoitem, // id que se establecerá después de SaveChangesAsync
-                                        TituloTarea = tareas_contratoData.TituloTarea,
-                                        DescripcionTarea = tareas_contratoData.DescripcionTarea,
-                                        TipoTarea = tareas_contratoData.TipoTarea,
+                                        TituloTarea = tareas_contratoData.tituloTarea,
+                                        DescripcionTarea = tareas_contratoData.descripcionTarea,
+                                        TipoTarea = tareas_contratoData.tipoTarea,
                                         EstatusId = 7,
-                                        FechaARealizar = tareas_contratoData?.FechaARealizar,
+                                        FechaARealizar = tareas_contratoData?.fechaARealizar,
                                     };
                                     _baseDatos.Add(tareaContrato);
                                     await _baseDatos.SaveChangesAsync();

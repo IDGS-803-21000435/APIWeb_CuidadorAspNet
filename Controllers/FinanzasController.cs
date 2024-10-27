@@ -12,9 +12,9 @@ namespace Cuidador.Controllers
     public class FinanzasController : ControllerBase
     {
 
-        private readonly DbAaaabeCuidadorContext _context;
+        private readonly DbAae280CuidadorContext _context;
 
-        public FinanzasController(DbAaaabeCuidadorContext context)
+        public FinanzasController(DbAae280CuidadorContext context)
         {
             _context = context;
         }
