@@ -56,8 +56,12 @@ namespace Cuidador.Controllers
         {
             List<getFeedback> listaGetFeedback = new List<getFeedback>();
             var listaFeedback = await _context.Feedbacks.ToListAsync();
+            var listaUsuarios = await _context.Usuarios.ToListAsync();
+            var listaEstatus = await _context.Estatuses.ToListAsync();
 
             foreach (var feedback in listaFeedback) {
+                var usuario = listaUsuarios.Where(lu => lu.IdUsuario == feedback.UsuarioidRemitente);
+                var estatus = listaEstatus.Where(e => e.IdEstatus == feedback.Estatusid);
                 var getFeedback = new getFeedback
                 {
                     IdFeedback = feedback.IdFeedback,
@@ -69,14 +73,56 @@ namespace Cuidador.Controllers
                     EstatusId = feedback.Estatusid,
                     UsuarioRegistro = feedback.UsuarioRegistro,
                     FechaRegistro = feedback.FechaRegistro,
-                    Estatus = feedback.Estatus,
-                    UsuarioidRemitenteNavigation = feedback.UsuarioidRemitenteNavigation
+                    Estatus = estatus != null ? estatus.SingleOrDefault(): null,
+                    UsuarioIdRemitenteNavigation = usuario != null ? usuario.SingleOrDefault(): null
                 };
 
                 listaGetFeedback.Add(getFeedback);
             }
 
             return Ok(listaGetFeedback);
+        }
+
+        [HttpGet]
+        [Route("getFeedbackFilted/{id}")]
+        public async Task<IActionResult> getFeedbackPorId(int id)
+        {
+            List<getFeedback> listaGetFeedback = new List<getFeedback>();
+            var listaFeedback = await _context.Feedbacks.Where(u => u.UsuarioidRemitente == id).ToListAsync();
+            
+            if (listaFeedback != null && listaFeedback.Count > 0) 
+            {
+                var listaUsuarios = await _context.Usuarios.ToListAsync();
+                var listaEstatus = await _context.Estatuses.ToListAsync();
+
+                foreach (var feedback in listaFeedback)
+                {
+                    var usuario = listaUsuarios.SingleOrDefault(lu => lu.IdUsuario == feedback.UsuarioidRemitente);
+                    var estatus = listaEstatus.SingleOrDefault(e => e.IdEstatus == feedback.Estatusid);
+                    var getFeedback = new getFeedback
+                    {
+                        IdFeedback = feedback.IdFeedback,
+                        UsuarioIdRemitente = feedback.UsuarioidRemitente,
+                        Categoria = feedback.Categoria,
+                        Cuerpo = feedback.Cuerpo,
+                        Fecha = feedback.Fecha,
+                        FechaResolucion = feedback.FechaResolucion,
+                        EstatusId = feedback.Estatusid,
+                        UsuarioRegistro = feedback.UsuarioRegistro,
+                        FechaRegistro = feedback.FechaRegistro,
+                        Estatus = estatus != null ? estatus : null,
+                        UsuarioIdRemitenteNavigation = usuario != null ? usuario : null
+                    };
+
+                    listaGetFeedback.Add(getFeedback);
+                }
+
+                return Ok(listaGetFeedback);
+            }
+            else
+            {
+                return Ok(new { res = "no encontrado" });
+            };
         }
     }
 }
