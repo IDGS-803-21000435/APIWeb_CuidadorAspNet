@@ -1,3 +1,5 @@
-.vs
+.vs/
 obj/
 bin/
+.suo
+.dtbcache.v2
