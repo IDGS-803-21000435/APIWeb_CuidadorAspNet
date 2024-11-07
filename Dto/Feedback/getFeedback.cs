@@ -24,6 +24,6 @@ namespace Cuidador.Dto.Feedback
 
         public virtual Estatus Estatus { get; set; } = null!;
 
-        public virtual Usuario UsuarioidRemitenteNavigation { get; set; } = null!;
+        public virtual Usuario UsuarioIdRemitenteNavigation { get; set; } = null!;
     }
 }

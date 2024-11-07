@@ -35,7 +35,7 @@ public partial class Estatus
     public virtual ICollection<Documentacion> Documentacions { get; set; } = new List<Documentacion>();
 
     public virtual ICollection<Domicilio> Domicilios { get; set; } = new List<Domicilio>();
-
+    [JsonIgnore]
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
     public virtual ICollection<Menu> Menus { get; set; } = new List<Menu>();
@@ -47,6 +47,6 @@ public partial class Estatus
     public virtual ICollection<TareasContrato> TareasContratos { get; set; } = new List<TareasContrato>();
 
     public virtual TipoEstatus Tipoestatus { get; set; } = null!;
-
+    [JsonIgnore]
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }
