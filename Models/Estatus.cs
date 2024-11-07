@@ -40,6 +40,8 @@ public partial class Estatus
 
     public virtual ICollection<Menu> Menus { get; set; } = new List<Menu>();
 
+    public virtual ICollection<Notificacione> Notificaciones { get; set; } = new List<Notificacione>();
+
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
 
     public virtual ICollection<Saldo> Saldos { get; set; } = new List<Saldo>();

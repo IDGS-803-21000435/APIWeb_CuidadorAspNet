@@ -767,10 +767,11 @@ public partial class DbAae280CuidadorContext : DbContext
 
         modelBuilder.Entity<Notificacione>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("notificaciones");
+            entity.HasKey(e => e.IdNotificacion).HasName("PK__notifica__8270F9A59158B605");
 
+            entity.ToTable("notificaciones");
+
+            entity.Property(e => e.IdNotificacion).HasColumnName("id_notificacion");
             entity.Property(e => e.DescripcionNoti)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -782,9 +783,6 @@ public partial class DbAae280CuidadorContext : DbContext
             entity.Property(e => e.FechaRegistro)
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_registro");
-            entity.Property(e => e.IdNotificacion)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("id_notificacion");
             entity.Property(e => e.PersonaidNoti).HasColumnName("personaid_noti");
             entity.Property(e => e.RutaMenu)
                 .HasMaxLength(100)
@@ -797,12 +795,12 @@ public partial class DbAae280CuidadorContext : DbContext
             entity.Property(e => e.UsuarioModifico).HasColumnName("usuario_modifico");
             entity.Property(e => e.UsuarioRegistro).HasColumnName("usuario_registro");
 
-            entity.HasOne(d => d.Estatus).WithMany()
+            entity.HasOne(d => d.Estatus).WithMany(p => p.Notificaciones)
                 .HasForeignKey(d => d.Estatusid)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__notificac__estat__31B762FC");
 
-            entity.HasOne(d => d.PersonaidNotiNavigation).WithMany()
+            entity.HasOne(d => d.PersonaidNotiNavigation).WithMany(p => p.Notificaciones)
                 .HasForeignKey(d => d.PersonaidNoti)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__notificac__perso__30C33EC3");
@@ -1061,6 +1059,10 @@ public partial class DbAae280CuidadorContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("sistema_operativo");
+            entity.Property(e => e.TokenFirebase)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("token_firebase");
             entity.Property(e => e.UltimocambioContrasenia)
                 .HasColumnType("datetime")
                 .HasColumnName("ultimocambio_contrasenia");

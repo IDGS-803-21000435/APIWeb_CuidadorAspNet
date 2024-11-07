@@ -21,5 +21,7 @@ public partial class SesionesUsuario
 
     public bool IsSesionactiva { get; set; }
 
+    public string? TokenFirebase { get; set; }
+
     public virtual Usuario Usuario { get; set; } = null!;
 }

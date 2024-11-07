@@ -72,6 +72,8 @@ public partial class PersonaFisica
     public virtual Domicilio Domicilio { get; set; } = null!;
 
     public virtual Estatus? Estatus { get; set; }
+
+    public virtual ICollection<Notificacione> Notificaciones { get; set; } = new List<Notificacione>();
     [JsonIgnore]
     public virtual Usuario Usuario { get; set; } = null!;
 }
