@@ -1444,7 +1444,6 @@ namespace Cuidador.Controllers
 			usuarioExistente.FechaModificacion = DateTime.Now;
 			usuarioExistente.UsuarioModifico = us.usuario_modifico;
 
-<<<<<<< HEAD
             try
             {
                 await _baseDatos.SaveChangesAsync();
@@ -1494,18 +1493,4 @@ namespace Cuidador.Controllers
             return Ok(result);
         }
     }
-=======
-			try
-			{
-				await _baseDatos.SaveChangesAsync();
-				return Ok(new { success = "informacion actualizada" });
-			}
-			catch (DbUpdateConcurrencyException ex)
-			{
-				return StatusCode(StatusCodes.Status500InternalServerError, $"Error al actualizar el usuario: {ex.Message}");
-			}
-		}
-	
-	}
->>>>>>> 50f0aa84b5f625f582ce267fddd5804d28ce7154
 }
