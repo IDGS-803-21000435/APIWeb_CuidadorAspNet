@@ -1,4 +1,4 @@
-﻿using Cuidador.Models;
+﻿ using Cuidador.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -1453,6 +1453,44 @@ namespace Cuidador.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error al actualizar el usuario: {ex.Message}");
             }
+        }
+
+        [HttpGet]
+        [Route("verDatoUsuaro/{idUsuario}")]
+        public async Task<IActionResult> VerDatoUsuario(int idUsuario)
+        {
+            Usuario usuario = new Usuario();
+            usuario = await _baseDatos.Usuarios.Where(u => u.IdUsuario == idUsuario)
+                .Include(u => u.Usuarionivel)
+                .Include(u => u.TipoUsuario)
+                .Include(u => u.SalarioCuidadors)
+                .FirstOrDefaultAsync();
+
+            if(usuario == null)
+            {
+                var res = new { res = "Usario no encontrado" };
+                return BadRequest(res);
+            }
+
+            PersonaFisica personaFisica = null;
+            personaFisica = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario).Include( p => p.Domicilio).FirstOrDefaultAsync();
+
+            DatosMedico datoMedico = await _baseDatos.DatosMedicos.Where(d => d.IdDatosmedicos == personaFisica.DatosMedicosid)
+                .Include(d => d.Padecimientos)
+                .SingleOrDefaultAsync();
+
+            var result = new
+            {
+                usuario = usuario.Usuario1,
+                contrasenia = usuario.Contrasenia,
+                nivelUsuario = usuario.Usuarionivel.NombreNivel,
+                tipoUsuario = usuario.TipoUsuario.NombreTipo,
+                salarioCuidador = usuario.SalarioCuidadors,
+                personaFisica = personaFisica,
+                datoMedico = datoMedico
+            };
+
+            return Ok(result);
         }
     }
 }
