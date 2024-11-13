@@ -5,7 +5,7 @@ namespace Cuidador.Models;
 
 public partial class ContratoItem
 {
-    public int IdContratoitem { get; set; }
+    public int IdContratoItem { get; set; }
 
     public int ContratoId { get; set; }
 

@@ -37,13 +37,13 @@ namespace AdminTareasController.Hubs
                         case 19: // EN CURSO
                             tarea.FechaInicio = DateTime.Now;
                             break;
-                        case 18: // EN ESPERA
+                        case 26: // EN ESPERA
                             tarea.FechaPospuesta = DateTime.Now;
                             break;
                         case 9: // CONCLUIDA
                             tarea.FechaFinalizacion = DateTime.Now;
                             break;
-                    }
+                    }
 
                     _baseDatos.TareasContratos.Update(tarea);
                     await _baseDatos.SaveChangesAsync();
@@ -102,7 +102,7 @@ namespace AdminTareasController.Hubs
             //Se añaden eventos del contrato item
             eventos.Add(new OUTEventosContrato
             {
-                id = item.IdContratoitem,
+                id = item.IdContratoItem,
                 esTarea = false,
                 titulo = "Aceptación del cuidado",
                 fecha = item.FechaAceptacion,
@@ -112,7 +112,7 @@ namespace AdminTareasController.Hubs
 
             eventos.Add(new OUTEventosContrato
             {
-                id = item.IdContratoitem,
+                id = item.IdContratoItem,
                 esTarea = false,
                 titulo = "Inicio del cuidado",
                 fecha = item.FechaInicioCuidado,
@@ -134,7 +134,7 @@ namespace AdminTareasController.Hubs
 
             eventos.Add(new OUTEventosContrato
             {
-                id = item.IdContratoitem,
+                id = item.IdContratoItem,
                 esTarea = false,
                 titulo = "Fin del cuidado",
                 fecha = item.FechaFinCuidado,

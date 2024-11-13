@@ -310,11 +310,11 @@ public partial class DbAae280CuidadorContext : DbContext
 
         modelBuilder.Entity<ContratoItem>(entity =>
         {
-            entity.HasKey(e => e.IdContratoitem).HasName("PK__contrato__75024B51C2025E36");
+            entity.HasKey(e => e.IdContratoItem).HasName("PK__contrato__75024B51C2025E36");
 
             entity.ToTable("contrato_item");
 
-            entity.Property(e => e.IdContratoitem).HasColumnName("id_contratoitem");
+            entity.Property(e => e.IdContratoItem).HasColumnName("id_contratoitem");
             entity.Property(e => e.ContratoId).HasColumnName("contrato_id");
             entity.Property(e => e.EstatusId).HasColumnName("estatus_id");
             entity.Property(e => e.FechaAceptacion)

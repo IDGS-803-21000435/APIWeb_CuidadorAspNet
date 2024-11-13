@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -22,6 +23,6 @@ public partial class SesionesUsuario
     public bool IsSesionactiva { get; set; }
 
     public string? TokenFirebase { get; set; }
-
+    [JsonIgnore]
     public virtual Usuario Usuario { get; set; } = null!;
 }

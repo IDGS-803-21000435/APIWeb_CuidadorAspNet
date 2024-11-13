@@ -73,7 +73,7 @@ namespace Cuidador.Controllers
         }
 
         [HttpGet]
-        [Route("getDomicilio/{idUsuario")]
+        [Route("getDomicilio/{idUsuario}")]
         public async Task<IActionResult> getDomicilio(int idUsuario)
         {
             Usuario usuario = null;

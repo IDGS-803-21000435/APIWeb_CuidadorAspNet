@@ -54,6 +54,7 @@ namespace Cuidador.Controllers
                 detalleSaldoDTO.transaccionSaldo = await _context.Saldos
                     .Join(_context.TransaccionesSaldos, c => c.IdSaldo, m => m.SaldoId, (c, m) => new { c, m })
                     .Where(cm => cm.c.UsuarioId == idUsuario)
+                    .OrderByDescending(cm => cm.m.FechaTransaccion)
                     .Select(cm => cm.m).ToListAsync() ?? new List<TransaccionesSaldo>();
             }
             catch(Exception ex)
