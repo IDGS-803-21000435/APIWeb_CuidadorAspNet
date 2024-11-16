@@ -121,8 +121,33 @@ namespace Cuidador.Controllers
             }
             else
             {
-                return Ok(new { res = "no encontrado" });
+                return BadRequest(new { res = "no encontrado" });
             };
+        }
+
+
+        [HttpPost("aceptarFeedback/{id}/{idEstatus}")]
+        public async Task<IActionResult> aceptarFeedback(int id, int idEstatus)
+        {
+            var feedback = await _context.Feedbacks.FindAsync(id);
+            if (feedback == null)
+            {
+                return NotFound();
+            }
+
+            feedback.Estatusid = idEstatus;
+            feedback.FechaResolucion = DateOnly.FromDateTime(DateTime.Now);
+            _context.Entry(feedback).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok(new { res = "Se actualizo exitosamente" });
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return BadRequest("Failed to update");
+            }
         }
     }
 }
