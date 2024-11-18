@@ -1,4 +1,5 @@
-﻿using Cuidador.Models;
+﻿using Cuidador.Dto.User;
+using Cuidador.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -114,6 +115,101 @@ namespace Cuidador.Controllers
                 .SingleOrDefaultAsync();
 
             return Ok(persona.Documentacions);
+        }
+
+        [HttpGet]
+        [Route("getCuidadoresPendientes/{tipoUsuarioId}/{estatusId}")]
+        public async Task<IActionResult> GetCuidadoresPendientes(int tipoUsuarioId, int estatusId)
+        {
+            if (tipoUsuarioId < 0 || estatusId < 0)
+            {
+                return BadRequest(new { res = "Los parámetros tipoUsuarioId y estatusId deben ser mayores a 0 y válidos." });
+            }
+
+            var usuarios = await _baseDatos.Usuarios
+                .Where(u => u.TipoUsuarioid == tipoUsuarioId && u.Estatusid == estatusId && u.PersonaFisicas.Any(p => p.EsFamiliar == 0))
+                .Include(u => u.PersonaFisicas)
+                .ToListAsync();
+
+            List<UsuarioOUT> listUsuario = new List<UsuarioOUT>();
+
+            foreach(var u in usuarios)
+            {
+                UsuarioOUT usuario = new UsuarioOUT
+                {
+                    IdUsuario = u.IdUsuario,
+                    TipoUsuarioid = u.TipoUsuarioid,
+                    UsuarionivelId = u.UsuarionivelId,
+                    Usuario1 = u.Usuario1,
+                    Contrasenia = u.Contrasenia,
+                    Estatusid = u.Estatusid,
+                    UsuarioModifico = u.UsuarioModifico,
+                    FechaModificacion = u.FechaModificacion,
+                    UsuarioRegistro = u.UsuarioRegistro,
+                    FechaRegistro = u.FechaRegistro,
+                    PersonaFisicas = u.PersonaFisicas.ToList(),
+                };
+
+                listUsuario.Add(usuario);
+            }
+
+
+            if (listUsuario.Count > 0)
+            {
+                return Ok(listUsuario);
+            }
+            else
+            {
+                return BadRequest(new { res = "No hay datos a mostrar." });
+            }            
+        }
+
+
+        [HttpGet]
+        [Route("getFamiliaresPendientes/{tipoUsuarioId}/{estatusId}")]
+        public async Task<IActionResult> getFamiliaresPendientes(int tipoUsuarioId, int estatusId)
+        {
+            if (tipoUsuarioId < 0 || estatusId < 0)
+            {
+                return BadRequest(new { res = "Los parámetros tipoUsuarioId y estatusId deben ser mayores a 0 y válidos." });
+            }
+
+            var usuarios = await _baseDatos.Usuarios
+                .Where(u => u.TipoUsuarioid == tipoUsuarioId && u.Estatusid == estatusId && u.PersonaFisicas.Any(p => p.EsFamiliar == 1))
+                .Include(u => u.PersonaFisicas)
+                .ToListAsync();
+
+            List<UsuarioOUT> listUsuario = new List<UsuarioOUT>();
+
+            foreach (var u in usuarios)
+            {
+                UsuarioOUT usuario = new UsuarioOUT
+                {
+                    IdUsuario = u.IdUsuario,
+                    TipoUsuarioid = u.TipoUsuarioid,
+                    UsuarionivelId = u.UsuarionivelId,
+                    Usuario1 = u.Usuario1,
+                    Contrasenia = u.Contrasenia,
+                    Estatusid = u.Estatusid,
+                    UsuarioModifico = u.UsuarioModifico,
+                    FechaModificacion = u.FechaModificacion,
+                    UsuarioRegistro = u.UsuarioRegistro,
+                    FechaRegistro = u.FechaRegistro,
+                    PersonaFisicas = u.PersonaFisicas.ToList(),
+                };
+
+                listUsuario.Add(usuario);
+            }
+
+
+            if (listUsuario.Count > 0)
+            {
+                return Ok(listUsuario);
+            }
+            else
+            {
+                return BadRequest(new { res = "No hay datos a mostrar." });
+            }
         }
     }
 }
