@@ -137,8 +137,8 @@ namespace Cuidador.Controllers
 					.ToListAsync();
 
 				List<ContratoItem> outContratoitm = new List<ContratoItem>();
-                // Crear la lista de contrato items
-                var outcont = new ContratoItem
+				// Crear la lista de contrato items
+				var outcont = new ContratoItem
 				{
 					IdContratoItem = contratoitm.IdContratoItem,
 					Estatus = estatusList.SingleOrDefault(e => e.IdEstatus == contratoitm.EstatusId),
@@ -406,10 +406,10 @@ namespace Cuidador.Controllers
 				try
 				{
 					// validacion de fechas
-                    DateTime minSqlDate = new DateTime(1753, 1, 1);
-                    DateTime maxSqlDate = new DateTime(9999, 12, 31);
-                    // hay más campos para registrar
-                    var contrato = new Contrato
+					DateTime minSqlDate = new DateTime(1753, 1, 1);
+					DateTime maxSqlDate = new DateTime(9999, 12, 31);
+					// hay más campos para registrar
+					var contrato = new Contrato
 					{
 						PersonaidCuidador = data.personaCuidadorId,
 						PersonaidCliente = data.personaClienteId,
@@ -432,8 +432,15 @@ namespace Cuidador.Controllers
 						{
 							// Calcula los minutos sólo si 'diferencia' tiene un valor
 							minutos = diferencia.Value.Days * 24 * 60 + diferencia.Value.Hours * 60 + diferencia.Value.Minutes;
-							var persona_cuidador = await _baseDatos.PersonaFisicas.FirstOrDefaultAsync(p => p.IdPersona == data.personaCuidadorId);
-							salario_coidador = await _baseDatos.SalarioCuidadors.FirstOrDefaultAsync(s => s.Usuarioid == persona_cuidador.UsuarioId);
+							var persona_cuidador = await _baseDatos.PersonaFisicas.FirstOrDefaultAsync(p => p.IdPersona == data.personaCuidadorId) ?? new PersonaFisica();
+							
+							var culture = new System.Globalization.CultureInfo("es-ES");
+							string currentDay = DateTime.Now.ToString("dddd", culture).ToUpper();
+							
+							salario_coidador = await _baseDatos.SalarioCuidadors.FirstOrDefaultAsync(
+								s => s.Usuarioid == persona_cuidador.UsuarioId && s.DiaSemana == currentDay
+							) ?? new SalarioCuidador();
+							
 							var contratoitem = new ContratoItem
 							{
 								ContratoId = contrato.IdContrato, // id que se establecerá después de SaveChangesAsync
@@ -443,11 +450,11 @@ namespace Cuidador.Controllers
 								HorarioFinPropuesto = contratoitemData.horarioFinPropuesto,
 								ImporteTotal = Math.Round((decimal)(minutos * (salario_coidador.PrecioPorHora / 60)), 2),
 								// Asignando null a las fechas anulables
-                                FechaAceptacion = null,         // Esto es para DateTime? FechaAceptacion
-                                FechaInicioCuidado = null,      // Esto es para DateTime? FechaInicioCuidado
-                                FechaFinCuidado = null
-                            };
-                            
+								FechaAceptacion = null,         // Esto es para DateTime? FechaAceptacion
+								FechaInicioCuidado = null,      // Esto es para DateTime? FechaInicioCuidado
+								FechaFinCuidado = null
+							};
+							
 							_baseDatos.Add(contratoitem);
 							await _baseDatos.SaveChangesAsync();
 
@@ -457,18 +464,18 @@ namespace Cuidador.Controllers
 								{
 									if (tareas_contratoData.fechaARealizar.Value >= minSqlDate && tareas_contratoData.fechaARealizar.Value <= maxSqlDate)
 									{
-                                        var tareaContrato = new TareasContrato
-                                        {
-                                            ContratoitemId = contratoitem.IdContratoItem, // id que se establecerá después de SaveChangesAsync
-                                            TituloTarea = tareas_contratoData.tituloTarea,
-                                            DescripcionTarea = tareas_contratoData.descripcionTarea,
-                                            TipoTarea = tareas_contratoData.tipoTarea,
-                                            EstatusId = 7,
-                                            FechaARealizar = tareas_contratoData?.fechaARealizar,
-                                        };
-                                        _baseDatos.Add(tareaContrato);
-                                        await _baseDatos.SaveChangesAsync();
-                                    }
+										var tareaContrato = new TareasContrato
+										{
+											ContratoitemId = contratoitem.IdContratoItem, // id que se establecerá después de SaveChangesAsync
+											TituloTarea = tareas_contratoData.tituloTarea,
+											DescripcionTarea = tareas_contratoData.descripcionTarea,
+											TipoTarea = tareas_contratoData.tipoTarea,
+											EstatusId = 7,
+											FechaARealizar = tareas_contratoData?.fechaARealizar,
+										};
+										_baseDatos.Add(tareaContrato);
+										await _baseDatos.SaveChangesAsync();
+									}
 								}
 							}
 						}
@@ -477,30 +484,30 @@ namespace Cuidador.Controllers
 					var persona = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == data.personaClienteId).SingleOrDefaultAsync();
 
 					var importe = Math.Round((decimal)(minutos * (salario_coidador.PrecioPorHora / 60)), 2);
-                    Saldo eSaldo = await _baseDatos.Saldos
-                                .Where(s => s.UsuarioId == persona.UsuarioId)
-                                .FirstOrDefaultAsync() ?? new Saldo();
+					Saldo eSaldo = await _baseDatos.Saldos
+								.Where(s => s.UsuarioId == persona.UsuarioId)
+								.FirstOrDefaultAsync() ?? new Saldo();
 
-                    TransaccionesSaldo mov = new TransaccionesSaldo
-                    {
-                        SaldoId = eSaldo.IdSaldo,
-                        ConceptoTransaccion = "Contratacion de cuidados",
-                        MetodoPagoid = 7,
-                        TipoMovimiento = "Cargo",
-                        FechaTransaccion = DateTime.Now,
-                        ImporteTransaccion = contrato.ContratoItems.Sum((e) => e.ImporteTotal) ?? 0,
-                        SaldoActual = eSaldo.SaldoActual - (contrato.ContratoItems.Sum((e) => e.ImporteTotal) ?? 0),
-                        SaldoAnterior = eSaldo.SaldoActual - (contrato.ContratoItems.Sum((e) => e.ImporteTotal) ?? 0),
-                        FechaRegistro = DateTime.Now,
-                        UsuarioRegistro = eSaldo.UsuarioId
-                    };
+					TransaccionesSaldo mov = new TransaccionesSaldo
+					{
+						SaldoId = eSaldo.IdSaldo,
+						ConceptoTransaccion = "Contratacion de cuidados",
+						MetodoPagoid = 7,
+						TipoMovimiento = "Cargo",
+						FechaTransaccion = DateTime.Now,
+						ImporteTransaccion = contrato.ContratoItems.Sum((e) => e.ImporteTotal) ?? 0,
+						SaldoActual = eSaldo.SaldoActual - (contrato.ContratoItems.Sum((e) => e.ImporteTotal) ?? 0),
+						SaldoAnterior = eSaldo.SaldoActual - (contrato.ContratoItems.Sum((e) => e.ImporteTotal) ?? 0),
+						FechaRegistro = DateTime.Now,
+						UsuarioRegistro = eSaldo.UsuarioId
+					};
 
-                    _baseDatos.TransaccionesSaldos.Add(mov);
+					_baseDatos.TransaccionesSaldos.Add(mov);
 
-                    eSaldo.SaldoActual = eSaldo.SaldoActual- (contrato.ContratoItems.Sum((e) => e.ImporteTotal) ?? 0);
-                    _baseDatos.Entry(eSaldo).State = EntityState.Modified;
-                    // Aquí hacemos una única llamada a SaveChangesAsync, lo que asegura que todos los objetos se guarden de una vez.
-                    await _baseDatos.SaveChangesAsync();
+					eSaldo.SaldoActual = eSaldo.SaldoActual- (contrato.ContratoItems.Sum((e) => e.ImporteTotal) ?? 0);
+					_baseDatos.Entry(eSaldo).State = EntityState.Modified;
+					// Aquí hacemos una única llamada a SaveChangesAsync, lo que asegura que todos los objetos se guarden de una vez.
+					await _baseDatos.SaveChangesAsync();
 
 					// Si todo va bien, confirmamos la transacción
 					await transaction.CommitAsync();
@@ -541,24 +548,24 @@ namespace Cuidador.Controllers
 					if (item == null) return BadRequest("Id de item no encontrado");
 
 					item.EstatusId = change.idEstatus;
-                    if (change.idEstatus == 7)
-                    {
-                        item.FechaAceptacion = DateTime.Now;
-                    }
-                    else if (change.idEstatus == 19)
-                    {
-                        item.FechaInicioCuidado = DateTime.Now;
-                    }
-                    else if (change.idEstatus == 8)
-                    {
-                        item.FechaFinCuidado = DateTime.Now;
-                    }
-                    else
-                    {
-                        item.FechaFinCuidado = DateTime.Now;
-                    }
+					if (change.idEstatus == 7)
+					{
+						item.FechaAceptacion = DateTime.Now;
+					}
+					else if (change.idEstatus == 19)
+					{
+						item.FechaInicioCuidado = DateTime.Now;
+					}
+					else if (change.idEstatus == 8)
+					{
+						item.FechaFinCuidado = DateTime.Now;
+					}
+					else
+					{
+						item.FechaFinCuidado = DateTime.Now;
+					}
 
-                    item.FechaAceptacion = DateTime.Now;
+					item.FechaAceptacion = DateTime.Now;
 					_baseDatos.ContratoItems.Update(item);
 					await _baseDatos.SaveChangesAsync();
 

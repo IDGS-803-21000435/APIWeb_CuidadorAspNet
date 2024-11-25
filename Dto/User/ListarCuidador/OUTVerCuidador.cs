@@ -11,6 +11,6 @@ namespace Cuidador.Dto.User.ListarCuidador
         public List<CertificacionesExperiencium> certificaciones {  get; set; }
         public List<OUTPersonaFisicaDTO> personaFisica { get; set; }
         public int cuidadoRealizado { get; set; }
-        public decimal salarioCuidador {  get; set; }
+        public List<SalarioCuidador> horariosCuidador {  get; set; }
     }
 }

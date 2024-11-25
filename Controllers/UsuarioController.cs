@@ -62,7 +62,7 @@ namespace Cuidador.Controllers
 							.Contains(Menu.IdMenu)
 							select Menu).ToListAsync();
 
-						//var salario = await _baseDatos.SalarioCuidadors.Where(s => s.Usuarioid == persona.se)
+						List<SalarioCuidador> horariosCuidador = await _baseDatos.SalarioCuidadors.Where(s => s.Usuarioid == usuario.IdUsuario).ToListAsync();
 
 						var modelOutLogin = new OutLogin
 						{
@@ -71,7 +71,8 @@ namespace Cuidador.Controllers
 							TipoUsuarioid = usuario.TipoUsuarioid,
 							Estatusid = usuario.Estatusid,
 							Usuario1 = usuario.Usuario1,
-							Contrasenia = usuario.Contrasenia,
+							// Contrasenia = usuario.Contrasenia,
+							horariosCuidador = horariosCuidador,
 							PersonaFisica = persona,
 							Menu = menus
 						};
@@ -396,6 +397,7 @@ namespace Cuidador.Controllers
 			var us = new Usuario();
 			var nivelUsuario = new NivelUsuario();
 			var tipUsuario = new TipoUsuario();
+			
 			foreach (var p in persona)
 			{
 				us = await _baseDatos.Usuarios.SingleOrDefaultAsync(u => u.IdUsuario == p.UsuarioId && u.TipoUsuarioid == 1);
@@ -406,40 +408,22 @@ namespace Cuidador.Controllers
 				tipUsuario = await _baseDatos.TipoUsuarios.SingleOrDefaultAsync(t => t.IdTipousuario == us.TipoUsuarioid);
 				nivelUsuario = await _baseDatos.NivelUsuarios.SingleOrDefaultAsync(n => n.IdNivelusuario == us.UsuarionivelId);
 				var certificaciones = await _baseDatos.CertificacionesExperiencia.Where(c => c.PersonaId == p.IdPersona).ToListAsync();
-				var comen = await _baseDatos.ComentariosUsuarios.Where(c => c.PersonaReceptor.IdPersona == p.IdPersona).ToListAsync();
+				var comen = await _baseDatos.ComentariosUsuarios
+					.Where(c => c.PersonaReceptor.IdPersona == p.IdPersona)
+					.OrderByDescending(c => c.FechaRegistro)
+					.ToListAsync();
 				var domicilio = await _baseDatos.Domicilios.SingleOrDefaultAsync(d => d.IdDomicilio == p.DomicilioId);
 				listaComen.AddRange(comen);
 				listaDomicilio.Add(domicilio);
 				var contratos = await _baseDatos.Contratos.Where(c => c.PersonaidCuidador == p.IdPersona && c.EstatusId == 9).ToListAsync();
 				contratosRealizados.AddRange(contratos);
 			}
+			
 
-			var salario = await _baseDatos.SalarioCuidadors.SingleOrDefaultAsync(s => s.Usuarioid == us.IdUsuario);
+			List<SalarioCuidador> horarios = await _baseDatos.SalarioCuidadors.Where(s => s.Usuarioid == us.IdUsuario).ToListAsync() ?? new List<SalarioCuidador>();
 
 			var modelOutVerUsuario = new OUTVerUsuario();
-
-			if (salario == null)
-			{
-				salario = null;
-			}
-			else
-			{
-				modelOutVerUsuario = new OUTVerUsuario
-				{
-					id_usuario = us.IdUsuario,
-					usuario = us.Usuario1,
-					nivelUsuario = nivelUsuario.NombreNivel,
-					tipo_usuario = tipUsuario.NombreTipo,
-					personaFisica = persona,
-					comentarios_usuario = listaComen,
-					domicilio = listaDomicilio,
-					salario_cuidador = salario.PrecioPorHora,
-					cuidados_realizados = contratosRealizados.Count()
-				};
-
-				return Ok(modelOutVerUsuario);
-			}
-
+			
 			modelOutVerUsuario = new OUTVerUsuario
 			{
 				id_usuario = us.IdUsuario,
@@ -447,11 +431,13 @@ namespace Cuidador.Controllers
 				nivelUsuario = nivelUsuario.NombreNivel,
 				tipo_usuario = tipUsuario.NombreTipo,
 				personaFisica = persona,
-				comentarios_usuario = listaComen,
-				domicilio = listaDomicilio
+				comentariosUsuarioPersonaReceptor = listaComen,
+				domicilio = listaDomicilio,
+				horariosCuidador = horarios,
+				cuidadosRealizados = contratosRealizados.Count()
 			};
 
-			return Ok(modelOutVerUsuario);            
+			return Ok(modelOutVerUsuario);
 		}
 
 		[HttpGet]
@@ -508,7 +494,19 @@ namespace Cuidador.Controllers
 		public async Task<IActionResult> verCuidadores()
 		{
 			var outLista = new List<OUTVerCuidador>();
-			var usuarios = await _baseDatos.Usuarios.Where(u => u.TipoUsuarioid == 1 && u.Estatusid == 10).ToListAsync();
+			
+			var culture = new System.Globalization.CultureInfo("es-ES");
+			string currentDay = DateTime.Now.ToString("dddd", culture).ToUpper();
+
+			var usuarios = await (
+				from u in _baseDatos.Usuarios
+				join s in _baseDatos.SalarioCuidadors on u.IdUsuario equals s.Usuarioid
+				where u.TipoUsuarioid == 1 && u.Estatusid == 10 && s.DiaSemana == currentDay 
+					&& s.HoraInicio!.Value.Hour <= DateTime.Now.TimeOfDay.Hours 
+					&& s.HoraFin!.Value.Hour >= (DateTime.Now.TimeOfDay.Hours - 1)
+				select u
+			).ToListAsync();
+			
 			try
 			{
 				foreach (var us in usuarios)
@@ -584,39 +582,26 @@ namespace Cuidador.Controllers
 						}
 					}
 					
-					var salario = await _baseDatos.SalarioCuidadors.SingleOrDefaultAsync(s => s.Usuarioid == us.IdUsuario);
+					List<SalarioCuidador> horario = [];
 					
-					if (salario == null)
+					horario.Add(await _baseDatos.SalarioCuidadors.SingleOrDefaultAsync(
+						s => s.Usuarioid == us.IdUsuario
+						&& s.DiaSemana == currentDay
+					) ?? new SalarioCuidador());
+					
+					var datosOut = new OUTVerCuidador
 					{
-						salario = null;
-						var datosOut = new OUTVerCuidador
-						{
-							idUsuario = us.IdUsuario,
-							usuario = us.Usuario1,
-							nivelUsuario = nivelUsuario.NombreNivel,
-							comentariosUsuarioPersonaReceptor = listaComentarios,//lista comentarios
-							certificaciones = certificacionesExperiencia, //lista certificaciones
-							personaFisica = listaPersonas, //lista personasfisicas
-							cuidadoRealizado = contratosRealizados.Count(), //cuidados realizados
-							salarioCuidador = 0, //salarios
-						};
-						outLista.Add(datosOut);
-					}
-					else
-					{
-						var datosOut = new OUTVerCuidador
-						{
-							idUsuario = us.IdUsuario,
-							usuario = us.Usuario1,
-							nivelUsuario = nivelUsuario.NombreNivel,
-							comentariosUsuarioPersonaReceptor = comentarios,//lista comentarios
-							certificaciones = certificacionesExperiencia, //lista certificaciones
-							personaFisica = listaPersonas, //lista personasfisicas
-							cuidadoRealizado = contratosRealizados.Count(), //cuidados realizados
-							salarioCuidador = salario.PrecioPorHora, //salarios
-						};
-						outLista.Add(datosOut);
-					}                   
+						idUsuario = us.IdUsuario,
+						usuario = us.Usuario1,
+						nivelUsuario = nivelUsuario.NombreNivel,
+						comentariosUsuarioPersonaReceptor = listaComentarios,//lista comentarios
+						certificaciones = certificacionesExperiencia, //lista certificaciones
+						personaFisica = listaPersonas, //lista personasfisicas
+						cuidadoRealizado = contratosRealizados.Count(), //cuidados realizados
+						horariosCuidador = horario, //salarios
+					};
+					outLista.Add(datosOut);
+									
 				}
 
 				return Ok(outLista);
@@ -1444,53 +1429,53 @@ namespace Cuidador.Controllers
 			usuarioExistente.FechaModificacion = DateTime.Now;
 			usuarioExistente.UsuarioModifico = us.usuario_modifico;
 
-            try
-            {
-                await _baseDatos.SaveChangesAsync();
-                return Ok(new { success = "informacion actualizada" });
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al actualizar el usuario: {ex.Message}");
-            }
-        }
+			try
+			{
+				await _baseDatos.SaveChangesAsync();
+				return Ok(new { success = "informacion actualizada" });
+			}
+			catch (DbUpdateConcurrencyException ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, $"Error al actualizar el usuario: {ex.Message}");
+			}
+		}
 
-        [HttpGet]
-        [Route("verDatoUsuaro/{idUsuario}")]
-        public async Task<IActionResult> VerDatoUsuario(int idUsuario)
-        {
-            Usuario usuario = new Usuario();
-            usuario = await _baseDatos.Usuarios.Where(u => u.IdUsuario == idUsuario)
-                .Include(u => u.Usuarionivel)
-                .Include(u => u.TipoUsuario)
-                .Include(u => u.SalarioCuidadors)
-                .FirstOrDefaultAsync();
+		[HttpGet]
+		[Route("verDatoUsuaro/{idUsuario}")]
+		public async Task<IActionResult> VerDatoUsuario(int idUsuario)
+		{
+			Usuario usuario = new Usuario();
+			usuario = await _baseDatos.Usuarios.Where(u => u.IdUsuario == idUsuario)
+				.Include(u => u.Usuarionivel)
+				.Include(u => u.TipoUsuario)
+				.Include(u => u.SalarioCuidadors)
+				.FirstOrDefaultAsync();
 
-            if(usuario == null)
-            {
-                var res = new { res = "Usario no encontrado" };
-                return BadRequest(res);
-            }
+			if(usuario == null)
+			{
+				var res = new { res = "Usario no encontrado" };
+				return BadRequest(res);
+			}
 
-            PersonaFisica personaFisica = null;
-            personaFisica = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario).Include( p => p.Domicilio).FirstOrDefaultAsync();
+			PersonaFisica personaFisica = null;
+			personaFisica = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario).Include( p => p.Domicilio).FirstOrDefaultAsync();
 
-            DatosMedico datoMedico = await _baseDatos.DatosMedicos.Where(d => d.IdDatosmedicos == personaFisica.DatosMedicosid)
-                .Include(d => d.Padecimientos)
-                .SingleOrDefaultAsync();
+			DatosMedico datoMedico = await _baseDatos.DatosMedicos.Where(d => d.IdDatosmedicos == personaFisica.DatosMedicosid)
+				.Include(d => d.Padecimientos)
+				.SingleOrDefaultAsync();
 
-            var result = new
-            {
-                usuario = usuario.Usuario1,
-                contrasenia = usuario.Contrasenia,
-                nivelUsuario = usuario.Usuarionivel.NombreNivel,
-                tipoUsuario = usuario.TipoUsuario.NombreTipo,
-                salarioCuidador = usuario.SalarioCuidadors,
-                personaFisica = personaFisica,
-                datoMedico = datoMedico
-            };
+			var result = new
+			{
+				usuario = usuario.Usuario1,
+				contrasenia = usuario.Contrasenia,
+				nivelUsuario = usuario.Usuarionivel.NombreNivel,
+				tipoUsuario = usuario.TipoUsuario.NombreTipo,
+				salarioCuidador = usuario.SalarioCuidadors,
+				personaFisica = personaFisica,
+				datoMedico = datoMedico
+			};
 
-            return Ok(result);
-        }
-    }
+			return Ok(result);
+		}
+	}
 }
