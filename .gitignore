@@ -1,3 +1,26 @@
+# Visual Studio
 .vs/
-obj/
+*.user
+*.suo
+*.csproj.user
+*.dbmdl
+*.pfx
+*.publishsettings
+node_modules/
 bin/
+obj/
+debug/
+release/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Build results
+build/
+
+# Package files
+*.nupkg
+*.snupkg

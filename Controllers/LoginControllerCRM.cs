@@ -38,6 +38,7 @@ namespace Cuidador.Controllers
                 {
                     if(usuario.Contrasenia == bodyLogin.contrasenia)
                     {
+                        
                         personaFisica = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.UsuarioId == usuario.IdUsuario);
                         estatus = await _baseDatos.Estatuses.SingleOrDefaultAsync(e => e.IdEstatus == usuario.Estatusid);
 
@@ -51,21 +52,22 @@ namespace Cuidador.Controllers
                             FechaRegistro = usuario.FechaRegistro,
                             UsuarioRegistro = usuario.UsuarioRegistro,
                             FechaModificacion = usuario.FechaModificacion,
-                            UsuarioModifico  = usuario.UsuarioModifico,
-                            personaFisica = personaFisica,                            
+                            UsuarioModifico = usuario.UsuarioModifico,
+                            personaFisica = personaFisica,
                             estatus = estatus,
                         };
 
                         return Ok(outObject);
+                        
                     }
                     else
                     {
-                        return Ok(new { res = "Credenciales incorrectas" });
+                        return BadRequest(new { res = "Credenciales incorrectas" });
                     }
                 }
                 else
                 {
-                    return Ok(new { res = "No encontrado" });
+                    return BadRequest(new { res = "No encontrado" });
                 }
             }
             catch (Exception ex)
