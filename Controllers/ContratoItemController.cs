@@ -13,6 +13,7 @@ using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Cuidador.Data;
+using System.IO.Compression;
 
 namespace Cuidador.Controllers
 {
@@ -506,6 +507,8 @@ namespace Cuidador.Controllers
 
 					eSaldo.SaldoActual = eSaldo.SaldoActual- (contrato.ContratoItems.Sum((e) => e.ImporteTotal) ?? 0);
 					_baseDatos.Entry(eSaldo).State = EntityState.Modified;
+					
+					
 					// Aquí hacemos una única llamada a SaveChangesAsync, lo que asegura que todos los objetos se guarden de una vez.
 					await _baseDatos.SaveChangesAsync();
 
@@ -558,6 +561,23 @@ namespace Cuidador.Controllers
 					}
 					else if (change.idEstatus == 8)
 					{
+						
+						int usuarioId = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == item.Contrato.PersonaidCliente).Select(p => p.UsuarioId).FirstOrDefaultAsync();
+						CuentaBancarium cuentaBancaria = await _baseDatos.CuentaBancaria.Where(c => c.UsuarioId == usuarioId).FirstOrDefaultAsync() ?? new CuentaBancarium();
+						Saldo saldoCuidador = await _baseDatos.Saldos.Where(e => e.UsuarioId == usuarioId).FirstOrDefaultAsync() ?? new Saldo();
+						
+						MovimientoCuentum movimiento = new MovimientoCuentum
+						{
+							CuentabancariaId = cuentaBancaria.IdCuentabancaria,
+							ConceptoMovimiento = "Pago de servicio de cuidado",
+							MetodoPagoid = 7,
+							TipoMovimiento = "Abono",
+							FechaMovimiento = DateTime.Now,
+							ImporteMovimiento = item.ImporteTotal ?? 0,
+							SaldoActual = saldoCuidador.SaldoActual + (item.ImporteTotal ?? 0),
+							SaldoAnterior = saldoCuidador.SaldoActual,
+						}; 
+						
 						item.FechaFinCuidado = DateTime.Now;
 					}
 					else
