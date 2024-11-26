@@ -66,8 +66,10 @@ namespace Cuidador.Controllers
             }
 
             PersonaFisica personaFisica =  usuario.PersonaFisicas.First();
-            var persona = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == personaFisica.IdPersona)
+            var persona = await _baseDatos.PersonaFisicas
+                .Where(p => p.IdPersona == personaFisica.IdPersona)
                 .Include(p => p.DatosMedicos)
+                    .ThenInclude(dm => dm.Padecimientos)
                 .SingleOrDefaultAsync();
 
             return Ok(persona.DatosMedicos);
