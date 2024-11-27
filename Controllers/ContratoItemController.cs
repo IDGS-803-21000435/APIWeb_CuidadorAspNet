@@ -562,7 +562,7 @@ namespace Cuidador.Controllers
 					else if (change.idEstatus == 8)
 					{
 						
-						int usuarioId = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == item.Contrato.PersonaidCliente).Select(p => p.UsuarioId).FirstOrDefaultAsync();
+						int usuarioId = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == item.Contrato.PersonaidCuidador).Select(p => p.UsuarioId).FirstOrDefaultAsync();
 						CuentaBancarium cuentaBancaria = await _baseDatos.CuentaBancaria.Where(c => c.UsuarioId == usuarioId).FirstOrDefaultAsync() ?? new CuentaBancarium();
 						Saldo saldoCuidador = await _baseDatos.Saldos.Where(e => e.UsuarioId == usuarioId).FirstOrDefaultAsync() ?? new Saldo();
 						
@@ -578,10 +578,41 @@ namespace Cuidador.Controllers
 							SaldoAnterior = saldoCuidador.SaldoActual,
 						}; 
 						
+						saldoCuidador.SaldoActual = saldoCuidador.SaldoActual + item.ImporteTotal ?? 0;
+						saldoCuidador.FechaModificacion = DateTime.Now;
+						saldoCuidador.UsuarioModifico = usuarioId;
+						
+						_baseDatos.Saldos.Add(saldoCuidador);
+						_baseDatos.MovimientoCuenta.Add(movimiento);
+						
 						item.FechaFinCuidado = DateTime.Now;
 					}
 					else
 					{
+						int usuarioid = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == item.Contrato.PersonaidCliente).Select(p => p.UsuarioId).FirstOrDefaultAsync();
+						Saldo saldoCliente = await _baseDatos.Saldos.Where(e => e.UsuarioId == usuarioid).FirstOrDefaultAsync() ?? new Saldo();
+						
+						TransaccionesSaldo transacciones = new TransaccionesSaldo
+						{
+							SaldoId = saldoCliente.IdSaldo,
+							ConceptoTransaccion = "Servicio de cuidado cancelado",
+							MetodoPagoid = 7,
+							TipoMovimiento = "Abono",
+							FechaTransaccion = DateTime.Now,
+							ImporteTransaccion = item.ImporteTotal ?? 0,
+							SaldoActual = saldoCliente.SaldoActual - item.ImporteTotal ?? 0,
+							SaldoAnterior = saldoCliente.SaldoActual,
+							FechaModificacion = DateTime.Now,
+							UsuarioModifico = usuarioid
+						};
+						
+						saldoCliente.SaldoActual = saldoCliente.SaldoActual + item.ImporteTotal ?? 0;
+						saldoCliente.FechaModificacion = DateTime.Now;
+						saldoCliente.UsuarioModifico = usuarioid;
+						
+						_baseDatos.TransaccionesSaldos.Add(transacciones);
+						_baseDatos.Saldos.Add(saldoCliente); 
+							
 						item.FechaFinCuidado = DateTime.Now;
 					}
 
