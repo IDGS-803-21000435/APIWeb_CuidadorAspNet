@@ -10,6 +10,7 @@ using Cuidador.Dto.User.RegistrarFamiliar;
 using Cuidador.Dto.User.ListarCuidador;
 using System.Text.Json;
 using Cuidador.Dto.Documentos;
+using Cuidador.Dto.User.RegistrarAdulto;
 
 namespace Cuidador.Controllers
 {
@@ -1128,13 +1129,146 @@ namespace Cuidador.Controllers
 					// Si ocurre un error, se revierte toda la transacción
 					await transaction.RollbackAsync();
 					var innerException = ex.InnerException;
-					return BadRequest(new { error = ex.Message, innerError = innerException?.Message }
-);
+					return BadRequest(new { error = ex.Message, innerError = innerException?.Message });
 				}
 			}
 		}
 
-		[HttpGet("dashboardCuidador/{usuarioid}")]
+		[HttpPost("regAdultoMayor")]
+		public async Task<IActionResult> RegAdultoMayor ([FromBody] RequestRegAdultoDTORA requestDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            using (var transaction = await _baseDatos.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Registro de domicilio
+                    var domicilio = new Domicilio
+                    {
+                        Calle = requestDTO.Domicilio.Calle,
+                        Colonia = requestDTO.Domicilio.Colonia,
+                        NumeroInterior = requestDTO.Domicilio.NumeroInterior,
+                        NumeroExterior = requestDTO.Domicilio.NumeroExterior,
+                        Ciudad = requestDTO.Domicilio.Ciudad,
+                        Estado = requestDTO.Domicilio.Estado,
+                        Pais = requestDTO.Domicilio.Pais,
+                        Referencias = requestDTO.Domicilio.Referencias,
+                        EstatusId = requestDTO.Domicilio.EstatusId,
+                        FechaRegistro = DateTime.Now,
+                        UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro
+                    };
+
+                    _baseDatos.Domicilios.Add(domicilio);
+                    await _baseDatos.SaveChangesAsync();
+
+                    // Registro de datos médicos
+                    var datosMedicos = new DatosMedico
+                    {
+                        AntecedentesMedicos = requestDTO.DatosMedicos.AntecedentesMedicos,
+                        Alergias = requestDTO.DatosMedicos.Alergias,
+                        TipoSanguineo = requestDTO.DatosMedicos.TipoSanguineo,
+                        NombreMedicofamiliar = requestDTO.DatosMedicos.NombreMedicoFamiliar,
+                        TelefonoMedicofamiliar = requestDTO.DatosMedicos.TelefonoMedicoFamiliar,
+                        Observaciones = requestDTO.DatosMedicos.Observaciones,
+                        FechaRegistro = DateTime.Now,
+                        UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro
+                    };
+
+                    _baseDatos.DatosMedicos.Add(datosMedicos);
+                    await _baseDatos.SaveChangesAsync();
+
+                    // Registro de padecimientos
+                    var padecimientos = new List<Padecimiento>();
+
+                    foreach (var padecimientoDTO in requestDTO.Padecimientos)
+                    {
+                        var padecimiento = new Padecimiento
+                        {
+                            DatosmedicosId = datosMedicos.IdDatosmedicos,
+                            Nombre = padecimientoDTO.Nombre,
+                            Descripcion = padecimientoDTO.Descripcion,
+                            PadeceDesde = padecimientoDTO.PadeceDesde,
+                            FechaRegistro = DateTime.Now,
+                            UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro
+                        };
+
+                        padecimientos.Add(padecimiento);
+                    }
+
+                    _baseDatos.Padecimientos.AddRange(padecimientos);
+                    await _baseDatos.SaveChangesAsync();
+
+                    // Registro de persona
+                    var persona = new PersonaFisica
+                    {
+                        Nombre = requestDTO.Persona.Nombre,
+                        ApellidoPaterno = requestDTO.Persona.ApellidoPaterno,
+                        ApellidoMaterno = requestDTO.Persona.ApellidoMaterno,
+                        CorreoElectronico = requestDTO.Persona.CorreoElectronico,
+                        FechaNacimiento = requestDTO.Persona.FechaNacimiento,
+                        Genero = requestDTO.Persona.Genero,
+                        EstadoCivil = requestDTO.Persona.EstadoCivil,
+                        Rfc = requestDTO.Persona.Rfc,
+                        Curp = requestDTO.Persona.Curp,
+                        TelefonoMovil = requestDTO.Persona.TelefonoMovil,
+                        NombrecompletoFamiliar = requestDTO.Persona.NombreCompletoFamiliar,
+                        DomicilioId = domicilio.IdDomicilio, // Recuperado después de insertar domicilio
+                        DatosMedicosid = datosMedicos.IdDatosmedicos, // Recuperado después de insertar datos médicos
+                        AvatarImage = requestDTO.Persona.AvatarImage,
+                        EstatusId = requestDTO.Persona.EstatusId,
+                        FechaRegistro = DateTime.Now, // Se coloca en el controlador
+                        UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro, /*PUEDE TENER DETALLE*/
+                        UsuarioId = requestDTO.idUsuario,
+                        EsFamiliar =  0
+                    };
+
+                    _baseDatos.PersonaFisicas.Add(persona);
+                    await _baseDatos.SaveChangesAsync();
+
+                    // Registro de documentación
+                    var documentaciones = new List<Documentacion>();
+
+                    foreach (var listaDocumentacion in requestDTO.Documentacion)
+                    {
+                        var documentacion = new Documentacion
+                        {
+                            PersonaId = persona.IdPersona,
+                            TipoDocumento = listaDocumentacion.TipoDocumento,
+                            NombreDocumento = listaDocumentacion.NombreDocumento,
+                            UrlDocumento = listaDocumentacion.UrlDocumento,
+                            FechaEmision = listaDocumentacion.FechaEmision,
+                            FechaExpiracion = listaDocumentacion.FechaExpiracion,
+                            Version = listaDocumentacion.Version,
+                            EstatusId = listaDocumentacion.EstatusId,
+                            FechaRegistro = DateTime.Now, // Se coloca en el controlador
+                            UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
+                        };
+
+                        documentaciones.Add(documentacion);
+                    }
+
+                    _baseDatos.Documentacions.AddRange(documentaciones);
+                    await _baseDatos.SaveChangesAsync();
+
+                    // Confirmar transacción
+                    await transaction.CommitAsync();
+
+                    return Ok(new { res = "El adulto se registró exitosamente." });
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return BadRequest(new { error = ex.Message, innerError = ex.InnerException?.Message });
+                }
+            }
+        }
+
+
+        [HttpGet("dashboardCuidador/{usuarioid}")]
 		public async Task<IActionResult> DashboardCuidador(int usuarioid)
 		{
 			DashboardDTO dashboard = new DashboardDTO();
