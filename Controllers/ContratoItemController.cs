@@ -548,6 +548,7 @@ namespace Cuidador.Controllers
 				try
 				{
 					ContratoItem? item = await _baseDatos.ContratoItems.Where(c => c.IdContratoItem == change.idContratoItem).SingleOrDefaultAsync();
+					Contrato?  contrato = await _baseDatos.Contratos.Where(c => c.IdContrato == item.ContratoId).SingleOrDefaultAsync();
 					if (item == null) return BadRequest("Id de item no encontrado");
 
 					item.EstatusId = change.idEstatus;
@@ -562,7 +563,7 @@ namespace Cuidador.Controllers
 					else if (change.idEstatus == 8)
 					{
 						
-						int usuarioId = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == item.Contrato.PersonaidCuidador).Select(p => p.UsuarioId).FirstOrDefaultAsync();
+						int usuarioId = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == contrato!.PersonaidCuidador).Select(p => p.UsuarioId).FirstOrDefaultAsync();
 						CuentaBancarium cuentaBancaria = await _baseDatos.CuentaBancaria.Where(c => c.UsuarioId == usuarioId).FirstOrDefaultAsync() ?? new CuentaBancarium();
 						Saldo saldoCuidador = await _baseDatos.Saldos.Where(e => e.UsuarioId == usuarioId).FirstOrDefaultAsync() ?? new Saldo();
 						
@@ -589,44 +590,58 @@ namespace Cuidador.Controllers
 					}
 					else
 					{
-						int usuarioid = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == item.Contrato.PersonaidCliente).Select(p => p.UsuarioId).FirstOrDefaultAsync();
+						int usuarioid = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == item.Contrato.PersonaidCuidador).Select(p => p.UsuarioId).FirstOrDefaultAsync();
 						Saldo saldoCliente = await _baseDatos.Saldos.Where(e => e.UsuarioId == usuarioid).FirstOrDefaultAsync() ?? new Saldo();
 						
-						TransaccionesSaldo transacciones = new TransaccionesSaldo
-						{
-							SaldoId = saldoCliente.IdSaldo,
-							ConceptoTransaccion = "Servicio de cuidado cancelado",
-							MetodoPagoid = 7,
-							TipoMovimiento = "Abono",
-							FechaTransaccion = DateTime.Now,
-							ImporteTransaccion = item.ImporteTotal ?? 0,
-							SaldoActual = saldoCliente.SaldoActual - item.ImporteTotal ?? 0,
-							SaldoAnterior = saldoCliente.SaldoActual,
-							FechaModificacion = DateTime.Now,
-							UsuarioModifico = usuarioid
-						};
+						// TransaccionesSaldo transacciones = new TransaccionesSaldo
+						// {
+						// 	SaldoId = saldoCliente.IdSaldo,
+						// 	ConceptoTransaccion = "Servicio de cuidado cancelado",
+						// 	MetodoPagoid = 7,
+						// 	TipoMovimiento = "Abono",
+						// 	FechaTransaccion = DateTime.Now,
+						// 	ImporteTransaccion = item.ImporteTotal ?? 0,
+						// 	SaldoActual = saldoCliente.SaldoActual - item.ImporteTotal ?? 0,
+						// 	SaldoAnterior = saldoCliente.SaldoActual,
+						// 	FechaModificacion = DateTime.Now,
+						// 	UsuarioModifico = usuarioid
+						// };
 						
 						saldoCliente.SaldoActual = saldoCliente.SaldoActual + item.ImporteTotal ?? 0;
 						saldoCliente.FechaModificacion = DateTime.Now;
 						saldoCliente.UsuarioModifico = usuarioid;
 						
-						_baseDatos.TransaccionesSaldos.Add(transacciones);
-						_baseDatos.Saldos.Add(saldoCliente); 
+						// _baseDatos.TransaccionesSaldos.Add(transacciones);
+						// _baseDatos.Saldos.Add(saldoCliente); 
+						// await _baseDatos.SaveChangesAsync();
+						// await transaction.CommitAsync();
 							
 						item.FechaFinCuidado = DateTime.Now;
 					}
 
 					item.FechaAceptacion = DateTime.Now;
 					_baseDatos.ContratoItems.Update(item);
-					await _baseDatos.SaveChangesAsync();
-
-					await transaction.CommitAsync();
-
+					
 					return Ok(new { success = true });
+				}
+				catch (SqlException sqlEx)
+				{
+					return StatusCode(500, $"Error SQL: {sqlEx.Message}, Número de error: {sqlEx.Number}");
 				}
 				catch (Exception ex)
 				{
 					await transaction.RollbackAsync();
+					foreach (var entry in _baseDatos.ChangeTracker.Entries())
+					{
+						Console.WriteLine($"Entidad: {entry.Entity.GetType().Name}, Estado: {entry.State}");
+						foreach (var property in entry.CurrentValues.Properties)
+						{
+							var value = entry.CurrentValues[property];
+							Console.WriteLine($"  Propiedad: {property.Name}, Valor: {value}");
+						}
+					}
+
+					Console.WriteLine($"Error: {ex.Message}");
 					return StatusCode(500, $"Ocurrió un error: {ex.Message}");
 				}
 			}
