@@ -88,8 +88,8 @@ namespace Cuidador.Controllers
 			return Ok();
 		}
 		
-		[HttpPut("desactivarHorario/{idSueldoNivel}")]
-		public async Task<ActionResult<SalarioCuidador>> DesactivarHorario(int idSueldoNivel)
+		[HttpPut("cambiarEstatusHorario/{idSueldoNivel}/{estatus}")]
+		public async Task<ActionResult<SalarioCuidador>> DesactivarHorario(int idSueldoNivel, int estatus)
 		{
 			var horarioCuidador = await _context.SalarioCuidadors
 				.Where(h => h.IdSueldonivel == idSueldoNivel)
@@ -100,7 +100,7 @@ namespace Cuidador.Controllers
 				return BadRequest();
 			}
 			
-			horarioCuidador.Estatusid = 0;
+			horarioCuidador.Estatusid = byte.Parse(estatus.ToString());
 			horarioCuidador.FechaModificacion = DateTime.Now;
 			horarioCuidador.UsuarioModifico = horarioCuidador.Usuarioid;
 			
