@@ -153,19 +153,27 @@ namespace Cuidador.Controllers
 			List<UserCRM> users = new List<UserCRM>();
 			
 			string usuarioSelect = """
-				SELECT DISTINCT
+				SELECT
 				id_usuario,
 				usuario,
-				tipo.nombre_tipo as tipoUsuario,
-				estatusUsuario.nombre as estatusUsuario,
-				nivel_usuario.nombre_nivel as nivelUsuario,
+				tipo.nombre_tipo AS tipoUsuario,
+				estatusUsuario.nombre AS estatusUsuario,
+				nivel_usuario.nombre_nivel AS nivelUsuario,
 				u.fecha_registro,
-				avatar_image
+				MAX(avatar_image) AS avatar_image -- Puedes cambiar esto según tus necesidades
 			FROM usuario u
-				INNER JOIN estatus estatusUsuario on id_estatus = u.estatusid
-				INNER JOIN tipo_usuario tipo on id_tipousuario = tipo_usuarioid
-				INNER JOIN nivel_usuario on id_nivelusuario = usuarionivel_id
-				INNER JOIN persona_fisica on usuario_id = id_usuario
+				INNER JOIN estatus estatusUsuario ON id_estatus = u.estatusid
+				INNER JOIN tipo_usuario tipo ON id_tipousuario = tipo_usuarioid
+				INNER JOIN nivel_usuario ON id_nivelusuario = usuarionivel_id
+				INNER JOIN persona_fisica ON usuario_id = id_usuario
+			GROUP BY
+				id_usuario,
+				usuario,
+				tipo.nombre_tipo,
+				estatusUsuario.nombre,
+				nivel_usuario.nombre_nivel,
+				u.fecha_registro;
+
 			""";
 			
 			using (var conn = _dapperContext.createConnection())
