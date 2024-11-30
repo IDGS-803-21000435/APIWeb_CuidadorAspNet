@@ -955,8 +955,6 @@ namespace Cuidador.Controllers
 			}           
 		}
 
-		
-
 		[HttpPost("registrarFamiliarWeb")]
 		public async Task<IActionResult> RegistrarFamiliar([FromBody] RegistrarFamiliar usuarioDTO)
 		{

@@ -40,7 +40,7 @@ if (app.Environment.IsDevelopment())
 // Usar CORS
 app.UseCors("nuevaPolitica");
 
-app.UseHttpsRedirection();
+app.UseHttpsRedirection(); 
 
 //app.UseAuthorization();
 
