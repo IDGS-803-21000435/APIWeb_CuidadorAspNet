@@ -830,6 +830,7 @@ namespace Cuidador.Controllers
 					nombre_nivel as nivelUsuario,
 					nombre_tipo as tipoUsuario,
 					nombre as estatusUsuario,
+					estatusid as estatusId,
 					usuario,
 					contrasenia
 				FROM usuario

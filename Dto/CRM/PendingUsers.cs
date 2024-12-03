@@ -6,6 +6,7 @@ namespace Cuidador.Dto.CRM
 		public string nivelUsuario { get; set; }
 		public string tipoUsuario { get; set; }
 		public string estatusUsuario { get; set; }	
+		public int estatusId { get; set; }
 		public string usuario { get; set; }
 		public string contrasenia { get; set; }
 		public List<PendingPerson> personaFisica { get; set; }
