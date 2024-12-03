@@ -819,6 +819,64 @@ namespace Cuidador.Controllers
 			return contracts != null ? Ok(contracts) : BadRequest("Error al obtener los datos");
 		}
 	
+		[HttpGet("getPendingUsers/{tipoUsuario}/{esFamiliar}")]
+		public async Task<IActionResult> getPendingUser(int tipoUsuario, int esFamiliar)
+		{
+			List<PendingUsers> pendingUsers = new List<PendingUsers>();
+			
+			string pendingUsersSelect = """
+				SELECT 
+					id_usuario as idUsuario,
+					nombre_nivel as nivelUsuario,
+					nombre_tipo as tipoUsuario,
+					nombre as estatusUsuario,
+					usuario,
+					contrasenia
+				FROM usuario
+					INNER JOIN nivel_usuario on usuarionivel_id = id_nivelusuario
+					INNER JOIN tipo_usuario on id_tipousuario = tipo_usuarioid
+					INNER JOIN estatus on id_estatus = estatusid
+				WHERE estatusid = 18 AND tipo_usuarioid = @tipoUsuario
+			""";
+			
+			string pendingPersonSelect = """
+				SELECT 
+					nombre
+					, apellido_paterno as apellidoPaterno
+					, apellido_materno as apellidoMaterno
+					, correo_electronico as correoElectronico
+					, fecha_nacimiento as fechaNacimiento
+					, genero
+					, estado_civil as estadoCivil
+					, rfc
+					, curp
+					, telefono_particular as telefonoParticular
+					, telefono_emergencia as telefonoEmergencia
+					, telefono_movil as telefonoMovil	
+					, nombrecompleto_familiar as nombreCompletoFamiliar
+					, esFamiliar 
+				FROM persona_fisica
+				WHERE usuario_id = @usuarioId AND esFamiliar = @esFamiliar
+			""";
+			
+			DynamicParameters parameters = new DynamicParameters();
+			
+			using(var conn = _dapperContext.createConnection())
+			{
+				parameters.Add("@tipoUsuario", tipoUsuario);
+			
+				pendingUsers = (await conn.QueryAsync<PendingUsers>(pendingUsersSelect, parameters)).ToList();
+				
+				foreach(var user in pendingUsers)
+				{
+					parameters.Add("@usuarioId", user.idUsuario);
+					parameters.Add("@esFamiliar", esFamiliar);
+					user.personaFisica = (await conn.QueryAsync<PendingPerson>(pendingPersonSelect, parameters)).ToList();
+				}
+			}
+			return pendingUsers != null ? Ok(pendingUsers) : BadRequest("Error al obtener los datos");	
+		}
+	
 	}
 	
 }
