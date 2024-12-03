@@ -819,8 +819,8 @@ namespace Cuidador.Controllers
 			return contracts != null ? Ok(contracts) : BadRequest("Error al obtener los datos");
 		}
 	
-		[HttpGet("getPendingUsers/{tipoUsuario}/{esFamiliar}")]
-		public async Task<IActionResult> getPendingUser(int tipoUsuario, int esFamiliar)
+		[HttpGet("getPendingUsers/{tipoUsuario}/{esFamiliar}/{estatusid}")]
+		public async Task<IActionResult> getPendingUser(int tipoUsuario, int esFamiliar, int estatusid)
 		{
 			List<PendingUsers> pendingUsers = new List<PendingUsers>();
 			
@@ -836,7 +836,7 @@ namespace Cuidador.Controllers
 					INNER JOIN nivel_usuario on usuarionivel_id = id_nivelusuario
 					INNER JOIN tipo_usuario on id_tipousuario = tipo_usuarioid
 					INNER JOIN estatus on id_estatus = estatusid
-				WHERE estatusid = 18 AND tipo_usuarioid = @tipoUsuario
+				WHERE estatusid = @estatusid AND tipo_usuarioid = @tipoUsuario
 			""";
 			
 			string pendingPersonSelect = """
@@ -865,6 +865,7 @@ namespace Cuidador.Controllers
 			using(var conn = _dapperContext.createConnection())
 			{
 				parameters.Add("@tipoUsuario", tipoUsuario);
+				parameters.Add("@estatusid", estatusid);
 			
 				pendingUsers = (await conn.QueryAsync<PendingUsers>(pendingUsersSelect, parameters)).ToList();
 				
