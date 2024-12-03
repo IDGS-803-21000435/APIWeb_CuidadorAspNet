@@ -854,6 +854,7 @@ namespace Cuidador.Controllers
 					, telefono_emergencia as telefonoEmergencia
 					, telefono_movil as telefonoMovil	
 					, nombrecompleto_familiar as nombreCompletoFamiliar
+					, avatar_image as avatarImage
 					, esFamiliar 
 				FROM persona_fisica
 				WHERE usuario_id = @usuarioId AND esFamiliar = @esFamiliar

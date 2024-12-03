@@ -541,111 +541,38 @@ namespace Cuidador.Controllers
 
 		[HttpPost]
 		[Route("cambiarEstatusContratoItem")]
-		public async Task<IActionResult> CambiarEstatusContratoItem(OUTChangeEstatus change)
-		{
-			using (var transaction = await _baseDatos.Database.BeginTransactionAsync())
-			{
-				try
-				{
-					ContratoItem? item = await _baseDatos.ContratoItems.Where(c => c.IdContratoItem == change.idContratoItem).SingleOrDefaultAsync();
-					Contrato?  contrato = await _baseDatos.Contratos.Where(c => c.IdContrato == item.ContratoId).SingleOrDefaultAsync();
-					if (item == null) return BadRequest("Id de item no encontrado");
-
-					item.EstatusId = change.idEstatus;
-					if (change.idEstatus == 7)
-					{
-						item.FechaAceptacion = DateTime.Now;
-					}
-					else if (change.idEstatus == 19)
-					{
-						item.FechaInicioCuidado = DateTime.Now;
-					}
-					else if (change.idEstatus == 8)
-					{
-						
-						int usuarioId = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == contrato!.PersonaidCuidador).Select(p => p.UsuarioId).FirstOrDefaultAsync();
-						CuentaBancarium cuentaBancaria = await _baseDatos.CuentaBancaria.Where(c => c.UsuarioId == usuarioId).FirstOrDefaultAsync() ?? new CuentaBancarium();
-						Saldo saldoCuidador = await _baseDatos.Saldos.Where(e => e.UsuarioId == usuarioId).FirstOrDefaultAsync() ?? new Saldo();
-						
-						MovimientoCuentum movimiento = new MovimientoCuentum
-						{
-							CuentabancariaId = cuentaBancaria.IdCuentabancaria,
-							ConceptoMovimiento = "Pago de servicio de cuidado",
-							MetodoPagoid = 7,
-							TipoMovimiento = "Abono",
-							FechaMovimiento = DateTime.Now,
-							ImporteMovimiento = item.ImporteTotal ?? 0,
-							SaldoActual = saldoCuidador.SaldoActual + (item.ImporteTotal ?? 0),
-							SaldoAnterior = saldoCuidador.SaldoActual,
-						}; 
-						
-						saldoCuidador.SaldoActual = saldoCuidador.SaldoActual + item.ImporteTotal ?? 0;
-						saldoCuidador.FechaModificacion = DateTime.Now;
-						saldoCuidador.UsuarioModifico = usuarioId;
-						
-						_baseDatos.Saldos.Add(saldoCuidador);
-						_baseDatos.MovimientoCuenta.Add(movimiento);
-						
-						item.FechaFinCuidado = DateTime.Now;
-					}
-					else
-					{
-						int usuarioid = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == item.Contrato.PersonaidCuidador).Select(p => p.UsuarioId).FirstOrDefaultAsync();
-						Saldo saldoCliente = await _baseDatos.Saldos.Where(e => e.UsuarioId == usuarioid).FirstOrDefaultAsync() ?? new Saldo();
-						
-						// TransaccionesSaldo transacciones = new TransaccionesSaldo
-						// {
-						// 	SaldoId = saldoCliente.IdSaldo,
-						// 	ConceptoTransaccion = "Servicio de cuidado cancelado",
-						// 	MetodoPagoid = 7,
-						// 	TipoMovimiento = "Abono",
-						// 	FechaTransaccion = DateTime.Now,
-						// 	ImporteTransaccion = item.ImporteTotal ?? 0,
-						// 	SaldoActual = saldoCliente.SaldoActual - item.ImporteTotal ?? 0,
-						// 	SaldoAnterior = saldoCliente.SaldoActual,
-						// 	FechaModificacion = DateTime.Now,
-						// 	UsuarioModifico = usuarioid
-						// };
-						
-						saldoCliente.SaldoActual = saldoCliente.SaldoActual + item.ImporteTotal ?? 0;
-						saldoCliente.FechaModificacion = DateTime.Now;
-						saldoCliente.UsuarioModifico = usuarioid;
-						
-						// _baseDatos.TransaccionesSaldos.Add(transacciones);
-						// _baseDatos.Saldos.Add(saldoCliente); 
-						// await _baseDatos.SaveChangesAsync();
-						// await transaction.CommitAsync();
-							
-						item.FechaFinCuidado = DateTime.Now;
-					}
-
-					item.FechaAceptacion = DateTime.Now;
-					_baseDatos.ContratoItems.Update(item);
-					
-					return Ok(new { success = true });
-				}
-				catch (SqlException sqlEx)
-				{
-					return StatusCode(500, $"Error SQL: {sqlEx.Message}, Número de error: {sqlEx.Number}");
-				}
-				catch (Exception ex)
-				{
-					await transaction.RollbackAsync();
-					foreach (var entry in _baseDatos.ChangeTracker.Entries())
-					{
-						Console.WriteLine($"Entidad: {entry.Entity.GetType().Name}, Estado: {entry.State}");
-						foreach (var property in entry.CurrentValues.Properties)
-						{
-							var value = entry.CurrentValues[property];
-							Console.WriteLine($"  Propiedad: {property.Name}, Valor: {value}");
-						}
-					}
-
-					Console.WriteLine($"Error: {ex.Message}");
-					return StatusCode(500, $"Ocurrió un error: {ex.Message}");
-				}
-			}
-		}
+		// public async Task<IActionResult> CambiarEstatusContratoItem(OUTChangeEstatus change)
+		// {
+		// 	ContratoItem contratoItem = await _baseDatos.ContratoItems.Where(c => c.IdContratoItem == change.idContratoItem).FirstOrDefaultAsync() ?? new ContratoItem();
+		// 	Contrato contrato = await _baseDatos.Contratos.Where(c => c.IdContrato == contratoItem.ContratoId).FirstOrDefaultAsync() ?? new Contrato();
+			
+		// 	string statusContractItemUpdate = """
+		// 		UPDATE c SET c.estatus_id = @idEstatus
+		// 		FROM contrato_item c
+		// 		WHERE id_contratoitem = @idContratoItem
+		// 	""";
+			
+		// 	string dateChange = "UPDATE contrato_item SET fecha_fin_cuidado = GETDATE() WHERE id_contratoitem = @idContratoItem";
+			
+		// 	switch(change.idEstatus)
+		// 	{
+		// 		case 7:
+		// 			dateChange = "UPDATE contrato_item SET fecha_aceptacion = GETDATE() WHERE id_contratoitem = @idContratoItem";
+		// 			break;
+		// 		case 19:
+		// 			dateChange = "UPDATE contrato_item SET fecha_inicio_cuidado = GETDATE() WHERE id_contratoitem = @idContratoItem";
+		// 			break;
+		// 	}
+			
+		// 	if(change.idEstatus == 8)
+		// 	{
+		// 		string searchUser = "SELECT usuario_id FROM persona_fisica WHERE id_persona = @idPersona";
+		// 		DynamicParameters dynamicParameters = new DynamicParameters();
+		// 		dynamicParameters.Add("@idPersona", contrato.PersonaidCuidador);
+				
+		// 	}
+			
+		// }
 				
 		[HttpGet("verEstatusContratoItem/{idContratoItem}")]
 		public async Task<IActionResult> GetEstatusContratoItem(int idContratoItem)

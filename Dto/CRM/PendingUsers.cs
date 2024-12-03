@@ -27,6 +27,7 @@ namespace Cuidador.Dto.CRM
 		public string telefonoMovil { get; set; }
 		public string telefonoEmergencia { get; set; }
 		public string nombreCompletoFamiliar { get; set; }
+		public string avatarImage { get; set; }
 		public int esFamiliar { get; set; }
 	}
 }
