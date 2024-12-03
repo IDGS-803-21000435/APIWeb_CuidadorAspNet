@@ -879,6 +879,49 @@ namespace Cuidador.Controllers
 			return pendingUsers != null ? Ok(pendingUsers) : BadRequest("Error al obtener los datos");	
 		}
 	
+		[HttpGet("getPersonByPersonaId/{id}")]
+		public async Task<IActionResult> GetPersonByPersonaId(int id)
+		{
+			List<PersonaCRM> persona = new List<PersonaCRM>();
+			
+			string personaSelect = """
+				SELECT 
+				id_persona
+				, p.nombre
+				, apellido_paterno
+				, apellido_materno
+				, fecha_nacimiento
+				, avatar_image
+				, genero
+				, estado_civil
+				, rfc
+				, curp
+				, telefono_particular
+				, telefono_movil
+				, id_domicilio
+				, calle
+				, colonia
+				, numero_interior
+				, numero_exterior
+				, ciudad
+				, estado
+				, pais
+				, estatus.nombre as estatusPersona
+				, esFamiliar
+			FROM persona_fisica p
+				INNER JOIN domicilio on id_domicilio = domicilio_id
+				INNER JOIN estatus On id_estatus = p.estatus_id
+			WHERE id_persona = @id
+			""";
+			DynamicParameters parameters = new DynamicParameters();
+			using(var conn = _dapperContext.createConnection())
+			{
+				parameters.Add("@id", id);
+				persona = (await conn.QueryAsync<PersonaCRM>(personaSelect, parameters)).ToList();
+			}
+			return persona != null ? Ok(persona) : BadRequest("Error al obtener los datos");
+		}
+	
 	}
 	
 }
