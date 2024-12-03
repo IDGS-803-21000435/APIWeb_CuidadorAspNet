@@ -541,38 +541,116 @@ namespace Cuidador.Controllers
 
 		[HttpPost]
 		[Route("cambiarEstatusContratoItem")]
-		// public async Task<IActionResult> CambiarEstatusContratoItem(OUTChangeEstatus change)
-		// {
-		// 	ContratoItem contratoItem = await _baseDatos.ContratoItems.Where(c => c.IdContratoItem == change.idContratoItem).FirstOrDefaultAsync() ?? new ContratoItem();
-		// 	Contrato contrato = await _baseDatos.Contratos.Where(c => c.IdContrato == contratoItem.ContratoId).FirstOrDefaultAsync() ?? new Contrato();
+		public async Task<IActionResult> CambiarEstatusContratoItem(OUTChangeEstatus change)
+		{
 			
-		// 	string statusContractItemUpdate = """
-		// 		UPDATE c SET c.estatus_id = @idEstatus
-		// 		FROM contrato_item c
-		// 		WHERE id_contratoitem = @idContratoItem
-		// 	""";
-			
-		// 	string dateChange = "UPDATE contrato_item SET fecha_fin_cuidado = GETDATE() WHERE id_contratoitem = @idContratoItem";
-			
-		// 	switch(change.idEstatus)
-		// 	{
-		// 		case 7:
-		// 			dateChange = "UPDATE contrato_item SET fecha_aceptacion = GETDATE() WHERE id_contratoitem = @idContratoItem";
-		// 			break;
-		// 		case 19:
-		// 			dateChange = "UPDATE contrato_item SET fecha_inicio_cuidado = GETDATE() WHERE id_contratoitem = @idContratoItem";
-		// 			break;
-		// 	}
-			
-		// 	if(change.idEstatus == 8)
-		// 	{
-		// 		string searchUser = "SELECT usuario_id FROM persona_fisica WHERE id_persona = @idPersona";
-		// 		DynamicParameters dynamicParameters = new DynamicParameters();
-		// 		dynamicParameters.Add("@idPersona", contrato.PersonaidCuidador);
+			try
+			{
+				ContratoItem contratoItem = await _baseDatos.ContratoItems.Where(c => c.IdContratoItem == change.idContratoItem).FirstOrDefaultAsync() ?? new ContratoItem();
+				Contrato contrato = await _baseDatos.Contratos.Where(c => c.IdContrato == contratoItem.ContratoId).FirstOrDefaultAsync() ?? new Contrato();
 				
-		// 	}
+				DynamicParameters dynamicParameters = new DynamicParameters();
+				dynamicParameters.Add("@idContratoItem", change.idContratoItem);
+				dynamicParameters.Add("@idEstatus", change.idEstatus);
+				
+				string statusContractItemUpdate = """
+					UPDATE c SET c.estatus_id = @idEstatus
+					FROM contrato_item c
+					WHERE id_contratoitem = @idContratoItem
+				""";
+				
+				using (var connection = _connection.createConnection()) // Se actualiza el estatus del contrato item
+				{
+					var rowsAffected = await connection.ExecuteAsync(statusContractItemUpdate, dynamicParameters);
+					if (rowsAffected == 0)
+					{
+						return BadRequest(new { error = "No se pudo actualizar el estatus del contrato item" });
+					}
+				}
 			
-		// }
+				string dateChange = "UPDATE contrato_item SET fecha_fin_cuidado = GETDATE() WHERE id_contratoitem = @idContratoItem";
+				
+				switch(change.idEstatus)
+				{
+					case 7:
+						dateChange = "UPDATE contrato_item SET fecha_aceptacion = GETDATE() WHERE id_contratoitem = @idContratoItem";
+						break;
+					case 19:
+						dateChange = "UPDATE contrato_item SET fecha_inicio_cuidado = GETDATE() WHERE id_contratoitem = @idContratoItem";
+						break;
+				}
+				
+				using (var connection = _connection.createConnection()) // Se actualiza la fecha de aceptacion, inicio o fin de cuidado
+				{
+					var rowsAffected = await connection.ExecuteAsync(dateChange, dynamicParameters);
+					if (rowsAffected == 0)
+					{
+						return BadRequest(new { error = "No se pudo actualizar la fecha de aceptación, inicio o fin de cuidado" });
+					}
+				}
+				
+				
+				if(change.idEstatus == 8) // Operacion para regresar dinero al cliente
+				{
+					PersonaFisica persona = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == contrato.PersonaidCliente).FirstOrDefaultAsync() ?? new PersonaFisica();
+					Saldo saldo = await _baseDatos.Saldos.Where(s => s.UsuarioId == persona.UsuarioId).FirstOrDefaultAsync() ?? new Saldo();
+					
+					DynamicParameters transactionParam = new DynamicParameters();
+					transactionParam.Add("@saldoId", saldo.IdSaldo);
+					transactionParam.Add("@importeTransaccion", contratoItem.ImporteTotal);
+					transactionParam.Add("@saldoActual", saldo.SaldoActual + contratoItem.ImporteTotal);
+					transactionParam.Add("@saldoAnterior", saldo.SaldoActual);
+					
+					string insertTransaccion = @"
+						INSERT INTO transacciones_saldos (saldo_id, concepto_transaccion, metodo_pagoid, tipo_movimiento, fecha_transaccion, importe_transaccion, saldo_actual, saldo_anterior, fecha_registro, usuario_registro)
+						VALUES (@saldoId, 'Cancelación de Contrato', 7, 'Abono', GETDATE(), @importeTransaccion, @saldoActual, @saldoAnterior, GETDATE(), 1)
+					";
+					
+					string updateSaldo = "UPDATE saldos SET saldo_actual = @saldoActual WHERE id_saldo = @saldoId";
+					
+					using (var connection = _connection.createConnection())
+					{
+						int insertTransaccionSuccess = await connection.ExecuteAsync(insertTransaccion, transactionParam);
+						if(insertTransaccionSuccess == 0)  return BadRequest(new { error = "No se pudo registrar la transacción" });
+						int updateSaldoSuccess = await connection.ExecuteAsync(updateSaldo, transactionParam);
+						if(updateSaldoSuccess == 0) return BadRequest(new { error = "No se pudo actualizar el saldo" });
+					}
+				}
+				else if (change.idEstatus == 9) //Operación para añadir saldo al cuidador por contrato concluido
+				{
+					PersonaFisica persona = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == contrato.PersonaidCuidador).FirstOrDefaultAsync() ?? new PersonaFisica();
+					Saldo saldo = await _baseDatos.Saldos.Where(s => s.UsuarioId == persona.UsuarioId).FirstOrDefaultAsync() ?? new Saldo();
+					CuentaBancarium cuentaBancarium = await _baseDatos.CuentaBancaria.Where(c => c.UsuarioId == persona.UsuarioId).FirstOrDefaultAsync() ?? new CuentaBancarium();
+					
+					DynamicParameters movimientoParam = new DynamicParameters();
+					movimientoParam.Add("@cuentaBancariaId", cuentaBancarium.IdCuentabancaria);
+					movimientoParam.Add("@importeMovimiento", contratoItem.ImporteTotal);
+					movimientoParam.Add("@saldoActual", saldo.SaldoActual + contratoItem.ImporteTotal);
+					movimientoParam.Add("@saldoAnterior", saldo.SaldoActual);
+					movimientoParam.Add("@saldoId", saldo.IdSaldo);
+					
+					string insertMovimiento = @"
+						INSERT INTO movimiento_cuenta (cuentabancaria_id, concepto_movimiento, metodo_pagoid, tipo_movimiento, numeroseguimiento_banco, fecha_movimiento, importe_movimiento, saldo_actual, saldo_anterior)
+						VALUES (@cuentaBancariaId, 'Pago por Contrato', 7, 'Abono', '0000000000', GETDATE(), @importeMovimiento, @saldoActual, @saldoAnterior)
+					";
+					
+					string updateSaldo = "UPDATE saldos SET saldo_actual = @saldoActual WHERE id_saldo = @saldoId";
+					
+					using (var connection = _connection.createConnection())
+					{
+						int insertMovimientoSuccess = await connection.ExecuteAsync(insertMovimiento, movimientoParam);
+						if(insertMovimientoSuccess == 0)  return BadRequest(new { error = "No se pudo registrar el movimiento" });
+						int updateSaldoSuccess = await connection.ExecuteAsync(updateSaldo, movimientoParam);
+						if(updateSaldoSuccess == 0) return BadRequest(new { error = "No se pudo actualizar el saldo" });
+					}
+				}
+			}
+			catch(Exception ex)
+			{
+				return BadRequest(new { error = ex.Message });
+			}
+			return Ok(new { successful = "Se actualizó correctamente" });
+		}
 				
 		[HttpGet("verEstatusContratoItem/{idContratoItem}")]
 		public async Task<IActionResult> GetEstatusContratoItem(int idContratoItem)
