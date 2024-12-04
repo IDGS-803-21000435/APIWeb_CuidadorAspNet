@@ -261,9 +261,31 @@ namespace Cuidador.Controllers
 			return Ok(new { res = "Contraseña actualizada" });
 		}	
 			
-		// [HttpPut]
+		[HttpPost]
+		[Route("updateAvatar")]
+		public async Task<IActionResult> UpdateAvatarImage (UpdateAvatar avatar)
+		{
+			PersonaFisica personaActual = await _baseDatos.PersonaFisicas.Where(p => p.IdPersona == avatar.idPersona).SingleOrDefaultAsync() ?? new PersonaFisica();
+				
+			if(personaActual == null)
+			{
+				return BadRequest(new { res = "Persona no encontrada" });
+			}
+			
+			personaActual.AvatarImage = avatar.avatarImage;
+			
+			await _baseDatos.SaveChangesAsync();
+			
+			return Ok(new { res = "Avatar actualizado" });
+		}
 			
 				
+	}
+	
+	public class UpdateAvatar
+	{
+		public int idPersona { get; set; }
+		public string avatarImage { get; set; }
 	}
 	
 }

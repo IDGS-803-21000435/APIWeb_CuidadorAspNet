@@ -30,6 +30,7 @@ namespace Cuidador.Controllers
 				detalleSaldoDTO.saldoRetirado = await _context.CuentaBancaria
 					.Join(_context.MovimientoCuenta, c => c.IdCuentabancaria, m => m.CuentabancariaId, (c, m) => new { c, m })
 					.Where(cm => cm.c.UsuarioId == idUsuario && cm.m.TipoMovimiento == "Retiro")
+					.OrderByDescending(cm => cm.m.IdMovimientocuenta)
 					.Select(cm => cm.m.ImporteMovimiento).SumAsync();
 				detalleSaldoDTO.salarioCuidador = await _context.SalarioCuidadors.Where(s => s.Usuarioid == idUsuario).FirstOrDefaultAsync() ?? new SalarioCuidador();
 				detalleSaldoDTO.cuentaBancaria = await _context.CuentaBancaria.Where(c => c.UsuarioId == idUsuario).FirstOrDefaultAsync() ?? new CuentaBancarium();
@@ -160,10 +161,10 @@ namespace Cuidador.Controllers
 
 					return Ok("Saldo recargado exitosamente");
 				}
-				catch(Exception)
+				catch(Exception ex)
 				{
 					await transaction.RollbackAsync();
-					return BadRequest("Error Interno del Servidor");
+					return BadRequest("Error Interno del Servidor " + ex);
 				}
 			}
 		}

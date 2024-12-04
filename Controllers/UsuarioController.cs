@@ -1136,180 +1136,186 @@ namespace Cuidador.Controllers
 
 		[HttpPost("regAdultoMayor")]
 		public async Task<IActionResult> RegAdultoMayor ([FromBody] RequestRegAdultoDTORA requestDTO)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
 
-            using (var transaction = await _baseDatos.Database.BeginTransactionAsync())
-            {
-                try
-                {
-                    // Registro de domicilio
-                    var domicilio = new Domicilio
-                    {
-                        Calle = requestDTO.Domicilio.Calle,
-                        Colonia = requestDTO.Domicilio.Colonia,
-                        NumeroInterior = requestDTO.Domicilio.NumeroInterior,
-                        NumeroExterior = requestDTO.Domicilio.NumeroExterior,
-                        Ciudad = requestDTO.Domicilio.Ciudad,
-                        Estado = requestDTO.Domicilio.Estado,
-                        Pais = requestDTO.Domicilio.Pais,
-                        Referencias = requestDTO.Domicilio.Referencias,
-                        EstatusId = requestDTO.Domicilio.EstatusId,
-                        FechaRegistro = DateTime.Now,
-                        UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro
-                    };
+			using (var transaction = await _baseDatos.Database.BeginTransactionAsync())
+			{
+				try
+				{
+					// Registro de domicilio
+					var domicilio = new Domicilio
+					{
+						Calle = requestDTO.Domicilio.Calle,
+						Colonia = requestDTO.Domicilio.Colonia,
+						NumeroInterior = requestDTO.Domicilio.NumeroInterior,
+						NumeroExterior = requestDTO.Domicilio.NumeroExterior,
+						Ciudad = requestDTO.Domicilio.Ciudad,
+						Estado = requestDTO.Domicilio.Estado,
+						Pais = requestDTO.Domicilio.Pais,
+						Referencias = requestDTO.Domicilio.Referencias,
+						EstatusId = requestDTO.Domicilio.EstatusId,
+						FechaRegistro = DateTime.Now,
+						UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro
+					};
 
-                    _baseDatos.Domicilios.Add(domicilio);
-                    await _baseDatos.SaveChangesAsync();
+					_baseDatos.Domicilios.Add(domicilio);
+					await _baseDatos.SaveChangesAsync();
 
-                    // Registro de datos médicos
-                    var datosMedicos = new DatosMedico
-                    {
-                        AntecedentesMedicos = requestDTO.DatosMedicos.AntecedentesMedicos,
-                        Alergias = requestDTO.DatosMedicos.Alergias,
-                        TipoSanguineo = requestDTO.DatosMedicos.TipoSanguineo,
-                        NombreMedicofamiliar = requestDTO.DatosMedicos.NombreMedicoFamiliar,
-                        TelefonoMedicofamiliar = requestDTO.DatosMedicos.TelefonoMedicoFamiliar,
-                        Observaciones = requestDTO.DatosMedicos.Observaciones,
-                        FechaRegistro = DateTime.Now,
-                        UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro
-                    };
+					// Registro de datos médicos
+					var datosMedicos = new DatosMedico
+					{
+						AntecedentesMedicos = requestDTO.DatosMedicos.AntecedentesMedicos,
+						Alergias = requestDTO.DatosMedicos.Alergias,
+						TipoSanguineo = requestDTO.DatosMedicos.TipoSanguineo,
+						NombreMedicofamiliar = requestDTO.DatosMedicos.NombreMedicoFamiliar,
+						TelefonoMedicofamiliar = requestDTO.DatosMedicos.TelefonoMedicoFamiliar,
+						Observaciones = requestDTO.DatosMedicos.Observaciones,
+						FechaRegistro = DateTime.Now,
+						UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro
+					};
 
-                    _baseDatos.DatosMedicos.Add(datosMedicos);
-                    await _baseDatos.SaveChangesAsync();
+					_baseDatos.DatosMedicos.Add(datosMedicos);
+					await _baseDatos.SaveChangesAsync();
 
-                    // Registro de padecimientos
-                    var padecimientos = new List<Padecimiento>();
+					// Registro de padecimientos
+					var padecimientos = new List<Padecimiento>();
 
-                    foreach (var padecimientoDTO in requestDTO.Padecimientos)
-                    {
-                        var padecimiento = new Padecimiento
-                        {
-                            DatosmedicosId = datosMedicos.IdDatosmedicos,
-                            Nombre = padecimientoDTO.Nombre,
-                            Descripcion = padecimientoDTO.Descripcion,
-                            PadeceDesde = padecimientoDTO.PadeceDesde,
-                            FechaRegistro = DateTime.Now,
-                            UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro
-                        };
+					foreach (var padecimientoDTO in requestDTO.Padecimientos)
+					{
+						var padecimiento = new Padecimiento
+						{
+							DatosmedicosId = datosMedicos.IdDatosmedicos,
+							Nombre = padecimientoDTO.Nombre,
+							Descripcion = padecimientoDTO.Descripcion,
+							PadeceDesde = padecimientoDTO.PadeceDesde,
+							FechaRegistro = DateTime.Now,
+							UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro
+						};
 
-                        padecimientos.Add(padecimiento);
-                    }
+						padecimientos.Add(padecimiento);
+					}
 
-                    _baseDatos.Padecimientos.AddRange(padecimientos);
-                    await _baseDatos.SaveChangesAsync();
+					_baseDatos.Padecimientos.AddRange(padecimientos);
+					await _baseDatos.SaveChangesAsync();
 
-                    // Registro de persona
-                    var persona = new PersonaFisica
-                    {
-                        Nombre = requestDTO.Persona.Nombre,
-                        ApellidoPaterno = requestDTO.Persona.ApellidoPaterno,
-                        ApellidoMaterno = requestDTO.Persona.ApellidoMaterno,
-                        CorreoElectronico = requestDTO.Persona.CorreoElectronico,
-                        FechaNacimiento = requestDTO.Persona.FechaNacimiento,
-                        Genero = requestDTO.Persona.Genero,
-                        EstadoCivil = requestDTO.Persona.EstadoCivil,
-                        Rfc = requestDTO.Persona.Rfc,
-                        Curp = requestDTO.Persona.Curp,
-                        TelefonoMovil = requestDTO.Persona.TelefonoMovil,
-                        NombrecompletoFamiliar = requestDTO.Persona.NombreCompletoFamiliar,
-                        DomicilioId = domicilio.IdDomicilio, // Recuperado después de insertar domicilio
-                        DatosMedicosid = datosMedicos.IdDatosmedicos, // Recuperado después de insertar datos médicos
-                        AvatarImage = requestDTO.Persona.AvatarImage,
-                        EstatusId = requestDTO.Persona.EstatusId,
-                        FechaRegistro = DateTime.Now, // Se coloca en el controlador
-                        UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro, /*PUEDE TENER DETALLE*/
-                        UsuarioId = requestDTO.idUsuario,
-                        EsFamiliar =  0
-                    };
+					// Registro de persona
+					var persona = new PersonaFisica
+					{
+						Nombre = requestDTO.Persona.Nombre,
+						ApellidoPaterno = requestDTO.Persona.ApellidoPaterno,
+						ApellidoMaterno = requestDTO.Persona.ApellidoMaterno,
+						CorreoElectronico = requestDTO.Persona.CorreoElectronico,
+						FechaNacimiento = requestDTO.Persona.FechaNacimiento,
+						Genero = requestDTO.Persona.Genero,
+						EstadoCivil = requestDTO.Persona.EstadoCivil,
+						Rfc = requestDTO.Persona.Rfc,
+						Curp = requestDTO.Persona.Curp,
+						TelefonoMovil = requestDTO.Persona.TelefonoMovil,
+						NombrecompletoFamiliar = requestDTO.Persona.NombreCompletoFamiliar,
+						DomicilioId = domicilio.IdDomicilio, // Recuperado después de insertar domicilio
+						DatosMedicosid = datosMedicos.IdDatosmedicos, // Recuperado después de insertar datos médicos
+						AvatarImage = requestDTO.Persona.AvatarImage,
+						EstatusId = requestDTO.Persona.EstatusId,
+						FechaRegistro = DateTime.Now, // Se coloca en el controlador
+						UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro, /*PUEDE TENER DETALLE*/
+						UsuarioId = requestDTO.idUsuario,
+						EsFamiliar =  0
+					};
 
-                    _baseDatos.PersonaFisicas.Add(persona);
-                    await _baseDatos.SaveChangesAsync();
+					_baseDatos.PersonaFisicas.Add(persona);
+					await _baseDatos.SaveChangesAsync();
 
-                    // Registro de documentación
-                    var documentaciones = new List<Documentacion>();
+					// Registro de documentación
+					var documentaciones = new List<Documentacion>();
 
-                    foreach (var listaDocumentacion in requestDTO.Documentacion)
-                    {
-                        var documentacion = new Documentacion
-                        {
-                            PersonaId = persona.IdPersona,
-                            TipoDocumento = listaDocumentacion.TipoDocumento,
-                            NombreDocumento = listaDocumentacion.NombreDocumento,
-                            UrlDocumento = listaDocumentacion.UrlDocumento,
-                            FechaEmision = listaDocumentacion.FechaEmision,
-                            FechaExpiracion = listaDocumentacion.FechaExpiracion,
-                            Version = listaDocumentacion.Version,
-                            EstatusId = listaDocumentacion.EstatusId,
-                            FechaRegistro = DateTime.Now, // Se coloca en el controlador
-                            UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
-                        };
+					foreach (var listaDocumentacion in requestDTO.Documentacion)
+					{
+						var documentacion = new Documentacion
+						{
+							PersonaId = persona.IdPersona,
+							TipoDocumento = listaDocumentacion.TipoDocumento,
+							NombreDocumento = listaDocumentacion.NombreDocumento,
+							UrlDocumento = listaDocumentacion.UrlDocumento,
+							FechaEmision = listaDocumentacion.FechaEmision,
+							FechaExpiracion = listaDocumentacion.FechaExpiracion,
+							Version = listaDocumentacion.Version,
+							EstatusId = listaDocumentacion.EstatusId,
+							FechaRegistro = DateTime.Now, // Se coloca en el controlador
+							UsuarioRegistro = requestDTO.Domicilio.UsuarioRegistro /*PUEDE TENER DETALLE*/
+						};
 
-                        documentaciones.Add(documentacion);
-                    }
+						documentaciones.Add(documentacion);
+					}
 
-                    _baseDatos.Documentacions.AddRange(documentaciones);
-                    await _baseDatos.SaveChangesAsync();
+					_baseDatos.Documentacions.AddRange(documentaciones);
+					await _baseDatos.SaveChangesAsync();
 
-                    // Confirmar transacción
-                    await transaction.CommitAsync();
+					// Confirmar transacción
+					await transaction.CommitAsync();
 
-                    return Ok(new { res = "El adulto se registró exitosamente." });
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    return BadRequest(new { error = ex.Message, innerError = ex.InnerException?.Message });
-                }
-            }
-        }
+					return Ok(new { res = "El adulto se registró exitosamente." });
+				}
+				catch (Exception ex)
+				{
+					await transaction.RollbackAsync();
+					return BadRequest(new { error = ex.Message, innerError = ex.InnerException?.Message });
+				}
+			}
+		}
 
 
-        [HttpGet("dashboardCuidador/{usuarioid}")]
+		[HttpGet("dashboardCuidador/{usuarioid}")]
 		public async Task<IActionResult> DashboardCuidador(int usuarioid)
 		{
 			DashboardDTO dashboard = new DashboardDTO();
+			dashboard.fechasConContratos = new List<fechasConContratos>();
 			try
 			{
 				PersonaFisica personaCuidador = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.UsuarioId == usuarioid) ?? new PersonaFisica();
-				List<Contrato> contratos = await _baseDatos.Contratos.Where(c => c.PersonaidCuidador == personaCuidador.IdPersona).ToListAsync();
+				List<Contrato> contratos = await _baseDatos.Contratos.Where(
+					c => c.PersonaidCuidador == personaCuidador.IdPersona && (c.EstatusId == 18 || c.EstatusId == 19 || c.EstatusId == 7)
+				).ToListAsync();
 				List<ContratoItem> contratoItems = new List<ContratoItem>();
 
 				foreach (var contrato in contratos)
 				{
-					contratoItems.AddRange(await _baseDatos.ContratoItems.Where(ci => ci.ContratoId == contrato.IdContrato).ToListAsync());
+					contratoItems.AddRange(await _baseDatos.ContratoItems.Where(
+						ci => ci.ContratoId == contrato.IdContrato && ci.HorarioInicioPropuesto >= DateTime.Now
+						).ToListAsync());
 				}
 
 				foreach (var item in contratoItems.Where(ci => ci.EstatusId == 7 || ci.EstatusId == 19)) // Contratos en curso o aceptados 
 				{
 					PersonaFisica nombreCliente = await _baseDatos.PersonaFisicas.SingleOrDefaultAsync(p => p.IdPersona == item.Contrato.PersonaidCliente) ?? new PersonaFisica();
-					fechasConContratos fechasConContratos = new fechasConContratos
+					fechasConContratos fechas = new fechasConContratos
 					{
 						horarioInicioPropuesto = item.HorarioInicioPropuesto,
 						horarioFinPropuesto = item.HorarioFinPropuesto,
 						nombreCliente = nombreCliente.Nombre + " " + nombreCliente.ApellidoPaterno + " " + nombreCliente.ApellidoMaterno
 					};
+					dashboard.fechasConContratos.Add(fechas);
 				}
 
-				var resultado = await _baseDatos.Database.SqlQueryRaw<horasPorMes>(
-					"SELECT [dbo].[month_name](fecha_inicio_cuidado, 'en-ES') as mes, ISNULL(SUM(DATEDIFF(HOUR, fecha_inicio_cuidado, fecha_fin_cuidado)), 0) as horas " +
-					"FROM contrato " +
-					"INNER JOIN contrato_item on id_contrato = contrato_id " +
-					"WHERE personaid_cuidador = {0} GROUP BY fecha_inicio_cuidado", usuarioid)
-					.FirstOrDefaultAsync();
+				// var resultado = await _baseDatos.Database.SqlQueryRaw<horasPorMes>(
+				// 	"SELECT [dbo].[month_name](fecha_inicio_cuidado, 'en-ES') as mes, ISNULL(SUM(DATEDIFF(HOUR, fecha_inicio_cuidado, fecha_fin_cuidado)), 0) as horas " +
+				// 	"FROM contrato " +
+				// 	"INNER JOIN contrato_item on id_contrato = contrato_id " +
+				// 	"WHERE personaid_cuidador = {0} GROUP BY fecha_inicio_cuidado", usuarioid)
+				// 	.FirstOrDefaultAsync();
 
 
-				dashboard.horasPorMes = resultado != null ? new List<horasPorMes> { resultado } : new List<horasPorMes>();
+				// dashboard.horasPorMes = resultado != null ? new List<horasPorMes> { resultado } : new List<horasPorMes>();
 
-				dashboard.contratoEnCurso = contratoItems.FirstOrDefault(ci => ci.EstatusId == 19) ?? new ContratoItem();
+				// dashboard.contratoEnCurso = contratoItems.FirstOrDefault(ci => ci.EstatusId == 19) ?? new ContratoItem();
 
 			}
 			catch (Exception ex)
 			{
-				return BadRequest();
+				return BadRequest(ex.Message);
 			}
 			return Ok(dashboard);
 		}

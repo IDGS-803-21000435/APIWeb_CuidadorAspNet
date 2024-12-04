@@ -19,7 +19,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("nuevaPolitica", app =>
     {
-        app.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        app.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); 
     });
 });
 
