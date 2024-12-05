@@ -48,7 +48,7 @@ namespace Cuidador.Controllers
 				{
 					try
 					{
-						var persona = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario && p.EsFamiliar == 0 && p.EstatusId == 10).ToArrayAsync();
+						var persona = await _baseDatos.PersonaFisicas.Where(p => p.UsuarioId == usuario.IdUsuario  && p.EstatusId == 10).ToArrayAsync();
 						var menus = await (
 							from Menu in _baseDatos.Menus
 							where (
