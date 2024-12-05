@@ -31,8 +31,10 @@ public partial class CertificacionesExperiencium
     public int PersonaId { get; set; }
 
     public int? DocumentoId { get; set; }
+
     [JsonIgnore]
     public virtual Documentacion? Documento { get; set; }
+
     [JsonIgnore]
     public virtual PersonaFisica Persona { get; set; } = null!;
 }

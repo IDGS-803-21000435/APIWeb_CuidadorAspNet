@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Cuidador.Models;
 
@@ -23,5 +24,6 @@ public partial class TarjetaUsuario
 
     public int? ConcurrenciaUso { get; set; }
 
+    [JsonIgnore]
     public virtual Usuario Usuario { get; set; } = null!;
 }

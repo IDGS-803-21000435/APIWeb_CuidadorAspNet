@@ -23,6 +23,8 @@ public partial class Feedback
 
     public DateOnly FechaRegistro { get; set; }
 
+    public string? Observaciones { get; set; }
+
     public virtual Estatus Estatus { get; set; } = null!;
 
     public virtual Usuario UsuarioidRemitenteNavigation { get; set; } = null!;

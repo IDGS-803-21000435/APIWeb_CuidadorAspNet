@@ -35,6 +35,7 @@ public partial class Domicilio
     public int? UsuarioModifico { get; set; }
 
     public virtual Estatus? Estatus { get; set; }
+
     [JsonIgnore]
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
 

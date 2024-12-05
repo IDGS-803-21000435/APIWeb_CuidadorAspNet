@@ -29,6 +29,7 @@ public partial class SalarioCuidador
     public TimeOnly? HoraFin { get; set; }
 
     public byte Estatusid { get; set; }
+
     [JsonIgnore]
     public virtual Usuario Usuario { get; set; } = null!;
 }

@@ -29,6 +29,7 @@ public partial class DatosMedico
     public int? UsuarioModifico { get; set; }
 
     public virtual ICollection<Padecimiento> Padecimientos { get; set; } = new List<Padecimiento>();
+
     [JsonIgnore]
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
 }

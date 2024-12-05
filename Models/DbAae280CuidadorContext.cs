@@ -33,6 +33,8 @@ public partial class DbAae280CuidadorContext : DbContext
 
     public virtual DbSet<DatosMedico> DatosMedicos { get; set; }
 
+    public virtual DbSet<DetalleUsuarioProduccion> DetalleUsuarioProduccions { get; set; }
+
     public virtual DbSet<Documentacion> Documentacions { get; set; }
 
     public virtual DbSet<Domicilio> Domicilios { get; set; }
@@ -80,6 +82,10 @@ public partial class DbAae280CuidadorContext : DbContext
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     public virtual DbSet<VersionesMovil> VersionesMovils { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=sql5106.site4now.net;Database=db_aae280_cuidador;User Id=db_aae280_cuidador_admin;Password=Dellsvcs1!.;TrustServerCertificate=True;MultipleActiveResultSets=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -312,7 +318,7 @@ public partial class DbAae280CuidadorContext : DbContext
         {
             entity.HasKey(e => e.IdContratoItem).HasName("PK__contrato__75024B51C2025E36");
 
-            entity.ToTable("contrato_item");
+            entity.ToTable("contrato_item", tb => tb.HasTrigger("tr_actualiza_estatus_contrato"));
 
             entity.Property(e => e.IdContratoItem).HasColumnName("id_contratoitem");
             entity.Property(e => e.ContratoId).HasColumnName("contrato_id");
@@ -422,6 +428,17 @@ public partial class DbAae280CuidadorContext : DbContext
                 .HasColumnName("tipo_sanguineo");
             entity.Property(e => e.UsuarioModifico).HasColumnName("usuario_modifico");
             entity.Property(e => e.UsuarioRegistro).HasColumnName("usuario_registro");
+        });
+
+        modelBuilder.Entity<DetalleUsuarioProduccion>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("DetalleUsuarioProduccion");
+
+            entity.Property(e => e.Accion).HasMaxLength(30);
+            entity.Property(e => e.Fecha).HasColumnType("datetime");
+            entity.Property(e => e.IdDetalle).ValueGeneratedOnAdd();
         });
 
         modelBuilder.Entity<Documentacion>(entity =>
@@ -579,6 +596,10 @@ public partial class DbAae280CuidadorContext : DbContext
             entity.Property(e => e.Fecha).HasColumnName("fecha");
             entity.Property(e => e.FechaRegistro).HasColumnName("fecha_registro");
             entity.Property(e => e.FechaResolucion).HasColumnName("fecha_resolucion");
+            entity.Property(e => e.Observaciones)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("observaciones");
             entity.Property(e => e.UsuarioRegistro).HasColumnName("usuario_registro");
             entity.Property(e => e.UsuarioidRemitente).HasColumnName("usuarioid_remitente");
 
@@ -1025,7 +1046,7 @@ public partial class DbAae280CuidadorContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_registro");
             entity.Property(e => e.SaldoActual)
-                .HasColumnType("decimal(10, 4)")
+                .HasColumnType("decimal(22, 2)")
                 .HasColumnName("saldo_actual");
             entity.Property(e => e.UsuarioId).HasColumnName("usuario_id");
             entity.Property(e => e.UsuarioModifico).HasColumnName("usuario_modifico");
@@ -1241,10 +1262,10 @@ public partial class DbAae280CuidadorContext : DbContext
                 .HasColumnName("importe_transaccion");
             entity.Property(e => e.MetodoPagoid).HasColumnName("metodo_pagoid");
             entity.Property(e => e.SaldoActual)
-                .HasColumnType("decimal(10, 4)")
+                .HasColumnType("decimal(18, 2)")
                 .HasColumnName("saldo_actual");
             entity.Property(e => e.SaldoAnterior)
-                .HasColumnType("decimal(10, 4)")
+                .HasColumnType("decimal(18, 2)")
                 .HasColumnName("saldo_anterior");
             entity.Property(e => e.SaldoId).HasColumnName("saldo_id");
             entity.Property(e => e.TipoMovimiento)

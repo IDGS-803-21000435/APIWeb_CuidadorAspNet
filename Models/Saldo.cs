@@ -9,7 +9,7 @@ public partial class Saldo
 
     public int UsuarioId { get; set; }
 
-    public decimal SaldoActual { get; set; }
+    public decimal? SaldoActual { get; set; }
 
     public int Estatusid { get; set; }
 

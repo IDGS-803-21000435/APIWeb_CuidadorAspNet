@@ -26,7 +26,7 @@ namespace Cuidador.Controllers
 			try
 			{
 				detalleSaldoDTO.saldoId = await _context.Saldos.Where(s => s.UsuarioId == idUsuario).Select(s => s.IdSaldo).FirstOrDefaultAsync();
-				detalleSaldoDTO.saldoActual = await _context.Saldos.Where(s => s.UsuarioId == idUsuario).Select(s => s.SaldoActual).FirstOrDefaultAsync();
+				detalleSaldoDTO.saldoActual = (decimal)await _context.Saldos.Where(s => s.UsuarioId == idUsuario).Select(s => s.SaldoActual).FirstOrDefaultAsync();
 				detalleSaldoDTO.saldoRetirado = await _context.CuentaBancaria
 					.Join(_context.MovimientoCuenta, c => c.IdCuentabancaria, m => m.CuentabancariaId, (c, m) => new { c, m })
 					.Where(cm => cm.c.UsuarioId == idUsuario && cm.m.TipoMovimiento == "Retiro")
@@ -50,7 +50,7 @@ namespace Cuidador.Controllers
 			DetalleSaldoClienteDTO detalleSaldoDTO = new DetalleSaldoClienteDTO();
 			try
 			{
-				detalleSaldoDTO.saldoActual = await _context.Saldos.Where(s => s.UsuarioId == idUsuario).Select(s => s.SaldoActual).FirstOrDefaultAsync();
+				detalleSaldoDTO.saldoActual = await _context.Saldos.Where(s => s.UsuarioId == idUsuario).Select(s => s.SaldoActual).FirstOrDefaultAsync() ?? 0;
 				detalleSaldoDTO.metodoPagoUsuario = await _context.MetodoPagoUsuarios.Where(m => m.UsuarioId == idUsuario).ToListAsync() ?? new List<MetodoPagoUsuario>();
 				detalleSaldoDTO.transaccionSaldo = await _context.Saldos
 					.Join(_context.TransaccionesSaldos, c => c.IdSaldo, m => m.SaldoId, (c, m) => new { c, m })
@@ -198,8 +198,8 @@ namespace Cuidador.Controllers
 						NumeroseguimientoBanco = Decimal.Parse(DateTime.Now.ToString("yyyyMMddHHmmssffff")),
 						FechaMovimiento = DateTime.Now,
 						ImporteMovimiento = retirar.importe,
-						SaldoActual = eSaldo.SaldoActual,
-						SaldoAnterior = eSaldo.SaldoActual + retirar.importe
+						SaldoActual = eSaldo.SaldoActual ??0,
+						SaldoAnterior = eSaldo.SaldoActual + retirar.importe ?? 0
 					};
 
 					_context.MovimientoCuenta.Add(mov);

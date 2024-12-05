@@ -31,12 +31,15 @@ public partial class Usuario
     public virtual ICollection<CuentaBancarium> CuentaBancaria { get; set; } = new List<CuentaBancarium>();
 
     public virtual Estatus Estatus { get; set; } = null!;
+
     [JsonIgnore]
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
     public virtual ICollection<MetodoPagoUsuario> MetodoPagoUsuarios { get; set; } = new List<MetodoPagoUsuario>();
+
     [JsonIgnore]
     public virtual ICollection<PersonaFisica> PersonaFisicas { get; set; } = new List<PersonaFisica>();
+
     [JsonIgnore]
     public virtual ICollection<SalarioCuidador> SalarioCuidadors { get; set; } = new List<SalarioCuidador>();
 

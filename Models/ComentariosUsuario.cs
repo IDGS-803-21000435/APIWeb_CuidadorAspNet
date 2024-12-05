@@ -23,8 +23,10 @@ public partial class ComentariosUsuario
     public DateTime? FechaModificacion { get; set; }
 
     public int? UsuarioModifico { get; set; }
+
     [JsonIgnore]
     public virtual PersonaFisica PersonaEmisor { get; set; } = null!;
+
     [JsonIgnore]
     public virtual PersonaFisica PersonaReceptor { get; set; } = null!;
 }

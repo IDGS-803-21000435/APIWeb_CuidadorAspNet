@@ -20,6 +20,8 @@ namespace Cuidador.Dto.Feedback
 
         public int UsuarioRegistro { get; set; }
 
+        public string Observaciones { get; set; }
+
         public DateOnly FechaRegistro { get; set; }
 
         public virtual Estatus Estatus { get; set; } = null!;

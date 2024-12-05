@@ -23,6 +23,7 @@ public partial class Padecimiento
     public DateTime? FechaModificacion { get; set; }
 
     public int? UsuarioModifico { get; set; }
+
     [JsonIgnore]
     public virtual DatosMedico? Datosmedicos { get; set; }
 }

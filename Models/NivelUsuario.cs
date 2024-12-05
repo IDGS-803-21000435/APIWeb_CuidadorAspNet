@@ -23,6 +23,7 @@ public partial class NivelUsuario
     public DateTime? FechaModificacion { get; set; }
 
     public int? UsuarioModifico { get; set; }
+
     [JsonIgnore]
     public virtual ICollection<Usuario> Usuarios { get; set; } = new List<Usuario>();
 }

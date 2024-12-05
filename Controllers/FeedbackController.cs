@@ -73,6 +73,7 @@ namespace Cuidador.Controllers
                     EstatusId = feedback.Estatusid,
                     UsuarioRegistro = feedback.UsuarioRegistro,
                     FechaRegistro = feedback.FechaRegistro,
+                    Observaciones = feedback.Observaciones,
                     Estatus = estatus != null ? estatus.SingleOrDefault(): null,
                     UsuarioIdRemitenteNavigation = usuario != null ? usuario.SingleOrDefault(): null
                 };
@@ -109,6 +110,7 @@ namespace Cuidador.Controllers
                         FechaResolucion = feedback.FechaResolucion,
                         EstatusId = feedback.Estatusid,
                         UsuarioRegistro = feedback.UsuarioRegistro,
+                        Observaciones = feedback.Observaciones,
                         FechaRegistro = feedback.FechaRegistro,
                         Estatus = estatus != null ? estatus : null,
                         UsuarioIdRemitenteNavigation = usuario != null ? usuario : null
@@ -126,8 +128,8 @@ namespace Cuidador.Controllers
         }
 
 
-        [HttpPost("aceptarFeedback/{id}/{idEstatus}")]
-        public async Task<IActionResult> aceptarFeedback(int id, int idEstatus)
+        [HttpPost("aceptarFeedback/{id}/{idEstatus}/{observacion}")]
+        public async Task<IActionResult> aceptarFeedback(int id, int idEstatus, string observacion)
         {
             var feedback = await _context.Feedbacks.FindAsync(id);
             if (feedback == null)
@@ -137,6 +139,7 @@ namespace Cuidador.Controllers
 
             feedback.Estatusid = idEstatus;
             feedback.FechaResolucion = DateOnly.FromDateTime(DateTime.Now);
+            feedback.Observaciones = observacion;
             _context.Entry(feedback).State = EntityState.Modified;
 
             try

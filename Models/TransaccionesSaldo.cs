@@ -19,9 +19,9 @@ public partial class TransaccionesSaldo
 
     public decimal ImporteTransaccion { get; set; }
 
-    public decimal SaldoActual { get; set; }
+    public decimal? SaldoActual { get; set; }
 
-    public decimal SaldoAnterior { get; set; }
+    public decimal? SaldoAnterior { get; set; }
 
     public DateTime FechaRegistro { get; set; }
 
