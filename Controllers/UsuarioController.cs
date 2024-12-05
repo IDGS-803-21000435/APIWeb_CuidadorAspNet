@@ -1430,7 +1430,8 @@ namespace Cuidador.Controllers
 						EstatusId = usuarioDTO.persona.EstatusId,
 						FechaRegistro = DateTime.Now, // Se coloca en el controlador
 						UsuarioRegistro = usuarioDTO.domicilio.UsuarioRegistro, /*PUEDE TENER DETALLE*/
-						UsuarioId = usuario.IdUsuario
+						UsuarioId = usuario.IdUsuario,
+						EsFamiliar = (short?)(usuarioDTO.usuario.TipoUsuarioId == 1 ? 0 : 1)
 					};
 
 					_baseDatos.PersonaFisicas.Add(persona);
